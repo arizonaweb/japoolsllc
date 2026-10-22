@@ -1,422 +1,456 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { X, ArrowRight, Loader2, Check } from 'lucide-react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { ArrowLeft, ArrowRight, Check, Camera, X } from 'lucide-react';
+import { BRAND, SERVICES, TEL_LINK, buildSmsLink, type ServiceId } from '@/data/brand';
 import { EMAIL_RE } from '@/lib/bookings';
-import {
-  ALL_ADDONS,
-  BRAND,
-  IMAGES,
-  SERVICES,
-  TRAVEL_OPTIONS,
-  buildSmsLink,
-  calculateEstimate,
-  getService,
-  type ServiceId,
-  type TravelId,
-} from '@/data/brand';
-import EstimateSummary from './EstimateSummary';
-import { MessageIcon } from './icons';
 
 interface Props {
   open: boolean;
   onClose: () => void;
   serviceId: ServiceId;
-  guests: number;
-  travel: TravelId;
-  addOnIds: string[];
   onService: (id: ServiceId) => void;
-  onTravel: (t: TravelId) => void;
-  onGuests: (n: number) => void;
-  onToggleAddOn: (id: string) => void;
 }
 
-const todayISO = () => {
-  const d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 10);
-};
-const formatDate = (iso: string) => {
-  if (!iso) return '';
-  const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-};
-const formatTime = (t: string) => {
-  if (!t) return '';
-  const [h, m] = t.split(':').map(Number);
-  const d = new Date();
-  d.setHours(h, m);
-  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+type FormFields = {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  notes: string;
 };
 
-const STEPS = [
-  'Select your service plan & focus tasks',
-  'Share your Phoenix-area pool address & contact info',
-  'Receive fast confirmation from Joe & the J & A Pools team',
-];
+type PhotoKey = 'pool' | 'spa' | 'equipment';
+type PlanChoice = ServiceId | 'consultation';
 
-export default function BookingModal(props: Props) {
-  const { open, onClose, serviceId, guests, travel, addOnIds } = props;
-  const service = getService(serviceId);
-  const [form, setForm] = useState({ name: '', email: '', phone: '', date: '', time: '', location: '', notes: '' });
-  const [consent, setConsent] = useState(true);
+const PHOTO_ORDER: PhotoKey[] = ['pool', 'spa', 'equipment'];
+const PHOTO_LABELS: Record<PhotoKey, string> = {
+  pool: 'Pool photo',
+  spa: 'Spa / detail photo',
+  equipment: 'Equipment pad photo',
+};
+const PHOTO_PROMPTS: Record<PhotoKey, string> = {
+  pool: 'Please take a picture of your pool. Ensure all of the pool is showing. Stand as far back as you can safely.',
+  spa: 'Please take a photo of your spa. If you do not have a spa, please take another photo of your pool showing any concerns or details needed.',
+  equipment: 'Please take a photo of your pool equipment pad (pump, filter, valves, and timers).',
+};
+const STEP_NAMES = ['Customer & property', 'Service plan', 'Pool photos', 'Notes & consent', 'Submit request'];
+
+export default function BookingModal({ open, onClose, serviceId, onService }: Props) {
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState<FormFields>({ name: '', email: '', phone: '', address: '', notes: '' });
+  const [consent, setConsent] = useState(false);
+  const [planChoice, setPlanChoice] = useState<PlanChoice>(serviceId);
+  const [photos, setPhotos] = useState<Partial<Record<PhotoKey, string>>>({});
+  const [preview, setPreview] = useState<string | null>(null);
+  const [cameraError, setCameraError] = useState('');
+  const [isCameraReady, setIsCameraReady] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState<null | { emailed?: boolean }>(null);
-  const [submitError, setSubmitError] = useState('');
+  const [dispatched, setDispatched] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
-    if (!open) return;
-    document.body.style.overflow = 'hidden';
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && !busy && onClose();
-    window.addEventListener('keydown', onKey);
-    setTimeout(() => dialogRef.current?.querySelector<HTMLInputElement>('input')?.focus(), 50);
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => dialogRef.current?.querySelector<HTMLInputElement>('input')?.focus(), 50);
+    } else {
+      document.body.style.overflow = '';
+      setStep(1);
+      setForm({ name: '', email: '', phone: '', address: '', notes: '' });
+      setConsent(false);
+      setPlanChoice(serviceId);
+      setPhotos({});
+      setPreview(null);
+      setCameraError('');
+      setIsCameraReady(false);
+      setErrors({});
+      setDispatched(false);
+    }
     return () => {
       document.body.style.overflow = '';
-      window.removeEventListener('keydown', onKey);
     };
-  }, [open, onClose, busy]);
+  }, [open, serviceId]);
 
   useEffect(() => {
-    if (!open) {
-      setDone(null);
-      setSubmitError('');
-    }
-  }, [open]);
+    if (open && step === 3) return;
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+    setIsCameraReady(false);
+  }, [open, step]);
 
-  const set = (k: keyof typeof form, v: string) => {
-    setForm((f) => ({ ...f, [k]: v }));
-    if (errors[k]) setErrors((e) => ({ ...e, [k]: '' }));
-  };
-
-  const est = calculateEstimate({ serviceId, guests, travel, addOnIds });
-  const chosen = ALL_ADDONS.filter((a) => addOnIds.includes(a.id));
-
-  const summary = useMemo(() => {
-    const lines = [
-      `Hi J & A Pools! I'd like a quote / to schedule pool service.`,
-      ``,
-      `Name: ${form.name.trim()}`,
-      `Phone: ${form.phone.trim()}`,
-      `Plan: ${service.name} (${service.priceLabel})`,
-      `Property: ${est.people > 1 ? `Commercial / Multi-Pool (${est.people} pools)` : 'Residential Pool'}`,
-      `Focus Tasks: ${chosen.length ? chosen.map((a) => a.name).join(', ') : 'Standard Pool Cleaning & Water Balancing'}`,
-      `Preferred Date: ${formatDate(form.date) || 'Flexible'}`,
-      `Preferred Window: ${formatTime(form.time) || 'Flexible'}`,
-      `Service Area: ${TRAVEL_OPTIONS.find((t) => t.id === travel)?.label}`,
-      `Pool Address: ${form.location.trim()}`,
-    ];
-    if (form.notes.trim()) lines.push(`Notes: ${form.notes.trim()}`);
-    return lines.join('\n');
-  }, [form, service, est.people, chosen, travel]);
-
-  const validate = () => {
-    const e: Record<string, string> = {};
-    if (!form.name.trim()) e.name = 'Please add your full name.';
-    if (!EMAIL_RE.test(form.email.trim())) e.email = 'Add a valid email for your service confirmation.';
-    if (form.phone.replace(/\D/g, '').length < 10) e.phone = 'Add a mobile number so Joe & the team can text or call you.';
-    if (!form.date) e.date = 'Choose a preferred start or inspection date.';
-    else if (form.date < todayISO()) e.date = 'Choose a date from today onward.';
-    if (!form.location.trim()) e.location = 'Please enter the pool street address or cross streets in Phoenix/Valley.';
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const submit = async (ev: FormEvent) => {
-    ev.preventDefault();
-    if (busy || !validate()) return;
-    setSubmitError('');
-    setDone({});
-    window.location.href = buildSmsLink(summary);
-  };
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    if (open) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
 
   if (!open) return null;
 
-  const Err = ({ k }: { k: string }) =>
-    errors[k] ? <p className="mt-1.5 text-[12px] text-destructive">{errors[k]}</p> : null;
+  const selectedService = SERVICES.find((service) => service.id === serviceId) ?? SERVICES[0];
+  const nextPhoto = PHOTO_ORDER.find((photo) => !photos[photo]);
+  const allPhotosCaptured = PHOTO_ORDER.every((photo) => photos[photo]);
+
+  const setField = (key: keyof FormFields, value: string) => {
+    setForm((current) => ({ ...current, [key]: value }));
+    if (errors[key]) setErrors((current) => ({ ...current, [key]: '' }));
+  };
+
+  const validateCustomer = () => {
+    const nextErrors: Record<string, string> = {};
+    if (!form.name.trim()) nextErrors.name = 'Please enter your full name.';
+    if (!EMAIL_RE.test(form.email.trim())) nextErrors.email = 'Please enter a valid email address.';
+    if (form.phone.replace(/\D/g, '').length < 10) nextErrors.phone = 'Please enter a valid mobile phone number.';
+    if (!form.address.trim() || !/\b\d{5}\b/.test(form.address)) {
+      nextErrors.address = 'Enter the street address and 5-digit ZIP code before continuing to photos.';
+    }
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const startCamera = async () => {
+    setCameraError('');
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCameraError('Camera capture is not available in this browser. Use a current browser over HTTPS and allow camera access, then retry.');
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { ideal: 'environment' } },
+      });
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      setIsCameraReady(true);
+    } catch (error) {
+      const cameraErrorName = error instanceof DOMException ? error.name : '';
+      setCameraError(
+        cameraErrorName === 'NotAllowedError' || cameraErrorName === 'SecurityError'
+          ? 'Camera permission was not granted. Allow camera access in your browser settings and try again. Camera capture requires a secure HTTPS connection.'
+          : cameraErrorName === 'NotFoundError'
+            ? 'No camera was found on this device. Try another camera-enabled device or call us for help.'
+            : 'The camera could not be started. Check browser permissions and try again, or call us for help.',
+      );
+      setIsCameraReady(false);
+    }
+  };
+
+  const takeSnapshot = () => {
+    const video = videoRef.current;
+    if (!video || !video.videoWidth || !video.videoHeight) {
+      setCameraError('The live camera preview is not ready yet. Wait a moment and try again.');
+      return;
+    }
+    const scale = Math.min(1, 1600 / video.videoWidth);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(video.videoWidth * scale);
+    canvas.height = Math.round(video.videoHeight * scale);
+    const context = canvas.getContext('2d');
+    if (!context) {
+      setCameraError('This browser could not capture the camera preview. Please try again.');
+      return;
+    }
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    setPreview(canvas.toDataURL('image/jpeg', 0.82));
+    setCameraError('');
+  };
+
+  const savePhoto = () => {
+    if (!preview || !nextPhoto) return;
+    setPhotos((current) => ({ ...current, [nextPhoto]: preview }));
+    setPreview(null);
+    setCameraError('');
+  };
+
+  const choosePlan = (choice: PlanChoice) => {
+    setPlanChoice(choice);
+    if (choice !== 'consultation') onService(choice);
+  };
+
+  const planName = planChoice === 'consultation' ? 'Quick consultation callback' : selectedService.name;
+  const message = [
+    'J & A Pools LLC — Pool Service Request',
+    '',
+    `Name: ${form.name.trim()}`,
+    `Email: ${form.email.trim()}`,
+    `Phone: ${form.phone.trim()}`,
+    `Pool address: ${form.address.trim()}`,
+    `Service plan: ${planName}`,
+    `Notes / gate codes: ${form.notes.trim() || 'None'}`,
+    `SMS consent: ${consent ? 'Yes' : 'No'}`,
+    `Photo references: ${PHOTO_ORDER.map((photo) => `${PHOTO_LABELS[photo]} (${photos[photo] ? 'captured on this device' : 'not captured'})`).join('; ')}`,
+    'Note: Camera photos are kept on this device and are not attached to this message.',
+  ].join('\n');
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    const mobileDevice = /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+    if (mobileDevice) {
+      window.location.href = buildSmsLink(message);
+    } else {
+      const subject = encodeURIComponent('J & A Pools LLC Service Request');
+      window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(message)}`;
+    }
+    setDispatched(true);
+  };
+
+  const ErrorMessage = ({ field }: { field: string }) =>
+    errors[field] ? <p className="mt-1.5 text-sm text-destructive">{errors[field]}</p> : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-stretch justify-center sm:items-center sm:p-6" role="presentation">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => !busy && onClose()} />
+    <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-5">
+      <button className="absolute inset-0 cursor-default" onClick={onClose} aria-label="Close scheduling dialog" />
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="booking-title"
-        className="relative flex h-full w-full max-w-5xl flex-col overflow-hidden rounded-none bg-ivory text-espresso shadow-2xl animate-slide-in sm:h-auto sm:max-h-[92vh] sm:rounded-2xl md:flex-row"
+        className="relative flex h-full w-full max-w-3xl flex-col overflow-hidden bg-ivory text-espresso shadow-2xl sm:max-h-[94vh] sm:rounded-2xl"
       >
-        <button
-          onClick={onClose}
-          disabled={busy}
-          className="absolute right-4 top-4 z-10 rounded-full bg-ivory/80 p-2 text-espresso/80 transition-colors hover:text-bronze"
-          aria-label="Close"
-        >
-          <X className="h-5 w-5" strokeWidth={1.5} />
-        </button>
-
-        {/* Summary column */}
-        <aside className="relative hidden w-[38%] shrink-0 overflow-y-auto border-r border-espresso/15 bg-cream text-espresso md:block">
-          <img
-            src={IMAGES.artistCutout}
-            alt="J & A Pools LLC service team"
-            className="h-52 w-full object-cover object-center"
-          />
-          <div className="relative p-8">
-            <p className="eyebrow">Your Pool Service Request</p>
-            <h3 className="mt-2 font-serif text-3xl font-semibold italic leading-tight text-espresso">
-              {service.name}
-            </h3>
-            <div className="mt-6">
-              <EstimateSummary serviceId={serviceId} guests={guests} travel={travel} addOnIds={addOnIds} tone="light" />
-            </div>
-            {chosen.length > 0 && (
-              <div className="mt-6 flex flex-wrap gap-2">
-                {chosen.map((a) => (
-                  <button
-                    key={a.id}
-                    type="button"
-                    onClick={() => props.onToggleAddOn(a.id)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-ivory px-3 py-1 text-[11px] font-medium text-espresso transition-colors hover:border-destructive hover:text-destructive"
-                  >
-                    {a.name} <X className="h-3 w-3" strokeWidth={1.5} />
-                  </button>
-                ))}
-              </div>
-            )}
-            <ol className="mt-8 space-y-3 border-t border-espresso/15 pt-6">
-              {STEPS.map((s, i) => (
-                <li key={s} className="flex items-baseline gap-3 text-[13px] text-espresso/80">
-                  <span className="text-[10px] font-bold tracking-[0.28em] text-bronze">0{i + 1}</span>
-                  {s}
-                </li>
-              ))}
-            </ol>
+        <header className="flex items-start justify-between gap-4 border-b border-espresso/15 px-5 py-5 sm:px-8">
+          <div>
+            <p className="eyebrow">J &amp; A Pools LLC · Step {step} of 5</p>
+            <h2 id="booking-title" className="mt-1 font-serif text-2xl font-semibold sm:text-3xl">
+              Schedule Your Pool Service
+            </h2>
           </div>
-        </aside>
-
-        {/* Form column */}
-        <div className="flex-1 overflow-y-auto px-6 pb-10 pt-12 sm:px-10">
-          {!done ? (
-            <form onSubmit={submit} noValidate>
-              <p className="eyebrow">J &amp; A Pools LLC · Fast Setup</p>
-              <h2 id="booking-title" className="display mt-3 text-4xl text-espresso sm:text-5xl">
-                Schedule Your <em className="italic text-bronze">Pool Service.</em>
-              </h2>
-              <p className="mt-3 max-w-md text-[14px] leading-relaxed text-espresso/75">
-                Share your pool details below or text us directly at{' '}
-                <strong className="text-espresso">{BRAND.phoneDisplay}</strong> and we’ll get you set up quickly.
-              </p>
-
-              <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="bk-name" className="field-label">Full name</label>
-                  <input
-                    id="bk-name"
-                    className="field"
-                    value={form.name}
-                    onChange={(e) => set('name', e.target.value)}
-                    autoComplete="name"
-                    placeholder="Your full name"
-                    required
-                  />
-                  <Err k="name" />
-                </div>
-                <div>
-                  <label htmlFor="bk-email" className="field-label">Email</label>
-                  <input
-                    id="bk-email"
-                    type="email"
-                    inputMode="email"
-                    className="field"
-                    value={form.email}
-                    onChange={(e) => set('email', e.target.value)}
-                    autoComplete="email"
-                    placeholder="you@email.com"
-                    required
-                  />
-                  <Err k="email" />
-                </div>
-                <div className="sm:col-span-2">
-                  <label htmlFor="bk-phone" className="field-label">Mobile phone</label>
-                  <input
-                    id="bk-phone"
-                    type="tel"
-                    className="field"
-                    value={form.phone}
-                    onChange={(e) => set('phone', e.target.value)}
-                    autoComplete="tel"
-                    placeholder="(480) 000-0000"
-                    required
-                  />
-                  <Err k="phone" />
-                </div>
-
-                <div>
-                  <label htmlFor="bk-service" className="field-label">Service Plan</label>
-                  <select
-                    id="bk-service"
-                    className="field cursor-pointer"
-                    value={serviceId}
-                    onChange={(e) => props.onService(e.target.value as ServiceId)}
-                  >
-                    {SERVICES.map((s) => (
-                      <option key={s.id} value={s.id} className="bg-ivory text-espresso">
-                        {s.name} ({s.priceLabel})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label htmlFor="bk-guests" className="field-label">Pools (1 = Residential, 2+ = Commercial)</label>
-                  <input
-                    id="bk-guests"
-                    type="number"
-                    min={1}
-                    max={10}
-                    className="field"
-                    value={est.people}
-                    onChange={(e) => props.onGuests(Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="bk-date" className="field-label">Preferred Start / Inspection Date</label>
-                  <input
-                    id="bk-date"
-                    type="date"
-                    min={todayISO()}
-                    className="field"
-                    value={form.date}
-                    onChange={(e) => set('date', e.target.value)}
-                  />
-                  <Err k="date" />
-                </div>
-                <div>
-                  <label htmlFor="bk-time" className="field-label">Preferred Time Window (Optional)</label>
-                  <input
-                    id="bk-time"
-                    type="time"
-                    className="field"
-                    value={form.time}
-                    onChange={(e) => set('time', e.target.value)}
-                  />
-                  <Err k="time" />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label htmlFor="bk-location" className="field-label">Pool Street Address / City</label>
-                  <input
-                    id="bk-location"
-                    className="field"
-                    value={form.location}
-                    onChange={(e) => set('location', e.target.value)}
-                    autoComplete="street-address"
-                    placeholder="Street address in Phoenix, Mesa, Glendale, or surrounding area"
-                  />
-                  <Err k="location" />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label htmlFor="bk-travel" className="field-label">Phoenix Metro Area</label>
-                  <select
-                    id="bk-travel"
-                    className="field cursor-pointer"
-                    value={travel}
-                    onChange={(e) => props.onTravel(e.target.value as TravelId)}
-                  >
-                    {TRAVEL_OPTIONS.map((t) => (
-                      <option key={t.id} value={t.id} className="bg-ivory text-espresso">
-                        {t.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label htmlFor="bk-notes" className="field-label">Pool Details &amp; Notes</label>
-                  <textarea
-                    id="bk-notes"
-                    rows={3}
-                    className="field resize-none"
-                    value={form.notes}
-                    onChange={(e) => set('notes', e.target.value)}
-                    placeholder="Gate code, pets, filter type (cartridge/DE/sand), green water, pump issue, or questions…"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="flex cursor-pointer items-start gap-3 text-[12px] leading-relaxed text-espresso/75">
-                    <input
-                      type="checkbox"
-                      checked={consent}
-                      onChange={(e) => setConsent(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 accent-gold"
-                    />
-                    <span>
-                      Text me my quote confirmation and service updates from J &amp; A Pools LLC ({BRAND.phoneDisplay}).
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="mt-8 rounded-xl bg-cream p-5 text-espresso md:hidden">
-                <EstimateSummary serviceId={serviceId} guests={guests} travel={travel} addOnIds={addOnIds} tone="light" compact />
-              </div>
-
-              {submitError && <p className="mt-6 text-[13px] text-destructive">{submitError}</p>}
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="submit"
-                  disabled={busy}
-                  aria-busy={busy}
-                  className="btn-primary group disabled:cursor-wait disabled:opacity-70"
-                >
-                  {busy ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={1.8} /> Sending Request…
-                    </>
-                  ) : (
-                    <>
-                      Submit Service Request
-                      <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.8} />
-                    </>
-                  )}
-                </button>
-                <a href={buildSmsLink(summary)} className="btn-ghost">
-                  <MessageIcon /> Text {BRAND.phoneDisplay} Directly
-                </a>
-              </div>
-            </form>
-          ) : (
-            <div className="flex h-full flex-col justify-center py-8">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-gold bg-petal text-bronze">
-                <Check className="h-6 w-6" strokeWidth={1.8} />
-              </span>
-              <p className="eyebrow mt-6">Request Ready to Send</p>
-              <h2 id="booking-title" className="display mt-3 text-4xl text-espresso sm:text-5xl">
-                We’ll Get You <em className="italic text-bronze">Set Up Quickly.</em>
-              </h2>
-              <p className="mt-4 max-w-md text-[15px] leading-relaxed text-espresso/80">
-                Thank you, <strong className="text-espresso">{form.name}</strong>! Your text message is ready — send it to
-                {BRAND.phoneDisplay} and Joe and the J &amp; A Pools LLC team will reach out to confirm your pool service
-                schedule and quote. If your messaging app didn't open, use the button below or call us.
-              </p>
-              <div className="mt-6 rounded-xl border border-espresso/15 bg-cream p-5 text-[13px] leading-relaxed text-espresso/85">
-                <p className="font-semibold">{service.name} · {formatDate(form.date)}</p>
-                <p className="mt-1">Address: {form.location}</p>
-              </div>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <button type="button" onClick={onClose} className="btn-primary">
-                  Done
-                </button>
-                <a href={buildSmsLink(summary)} className="btn-ghost">
-                  <MessageIcon /> Text {BRAND.phoneDisplay}
-                </a>
-              </div>
-            </div>
-          )}
+          <button onClick={onClose} className="rounded-full p-2 text-espresso/75 hover:bg-cream" aria-label="Close">
+            <X className="h-5 w-5" />
+          </button>
+        </header>
+        <div className="px-5 pt-4 sm:px-8">
+          <div className="grid grid-cols-5 gap-1.5" aria-label={`Step ${step} of 5`}>
+            {STEP_NAMES.map((name, index) => (
+              <div key={name} className={`h-1.5 rounded-full ${index < step ? 'bg-gold' : 'bg-espresso/15'}`} />
+            ))}
+          </div>
+          <p className="mt-2 text-xs font-semibold text-espresso/65">{STEP_NAMES[step - 1]}</p>
         </div>
+
+        <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
+          <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8">
+            {step === 1 && (
+              <section className="space-y-5" aria-label="Customer and property information">
+                <p className="text-sm leading-relaxed text-espresso/75">
+                  Share your contact details and Phoenix / Valley pool address. The address and ZIP are required before photos.
+                </p>
+                <div>
+                  <label htmlFor="booking-name" className="field-label">Full name</label>
+                  <input id="booking-name" autoComplete="name" className="field" value={form.name} onChange={(event) => setField('name', event.target.value)} />
+                  <ErrorMessage field="name" />
+                </div>
+                <div>
+                  <label htmlFor="booking-email" className="field-label">Email address</label>
+                  <input id="booking-email" type="email" autoComplete="email" inputMode="email" className="field" value={form.email} onChange={(event) => setField('email', event.target.value)} />
+                  <ErrorMessage field="email" />
+                </div>
+                <div>
+                  <label htmlFor="booking-phone" className="field-label">Mobile phone</label>
+                  <input id="booking-phone" type="tel" autoComplete="tel" className="field" value={form.phone} onChange={(event) => setField('phone', event.target.value)} placeholder="(480) 000-0000" />
+                  <ErrorMessage field="phone" />
+                </div>
+                <div>
+                  <label htmlFor="booking-address" className="field-label">Pool street address and ZIP code</label>
+                  <input id="booking-address" autoComplete="street-address" className="field" value={form.address} onChange={(event) => setField('address', event.target.value)} placeholder="Street, city, AZ 85031" />
+                  <ErrorMessage field="address" />
+                </div>
+              </section>
+            )}
+
+            {step === 2 && (
+              <section aria-label="Select a service plan">
+                <p className="mb-4 text-sm text-espresso/75">Select the service that best fits your pool.</p>
+                <div className="space-y-3">
+                  {SERVICES.map((service) => {
+                    const selected = planChoice === service.id;
+                    return (
+                      <button
+                        type="button"
+                        key={service.id}
+                        onClick={() => choosePlan(service.id)}
+                        aria-pressed={selected}
+                        className={`w-full rounded-xl border p-4 text-left transition-colors ${
+                          selected ? 'border-gold bg-petal/70 ring-1 ring-gold' : 'border-espresso/20 bg-cream/50 hover:border-gold/60'
+                        }`}
+                      >
+                        <span className="flex items-center justify-between gap-3 font-semibold">
+                          {service.name}
+                          {selected && <Check className="h-4 w-4 shrink-0 text-gold" />}
+                        </span>
+                        <span className="mt-1 block text-sm leading-relaxed text-espresso/75">{service.description}</span>
+                      </button>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    onClick={() => choosePlan('consultation')}
+                    aria-pressed={planChoice === 'consultation'}
+                    className={`w-full rounded-xl border p-4 text-left transition-colors ${
+                      planChoice === 'consultation' ? 'border-gold bg-petal/70 ring-1 ring-gold' : 'border-espresso/20 bg-cream/50 hover:border-gold/60'
+                    }`}
+                  >
+                    <span className="font-semibold">I’m not sure what to select</span>
+                    <span className="mt-1 block text-sm text-espresso/75">Click here if you don’t know what to select and we’ll reach out for a quick consultation.</span>
+                  </button>
+                </div>
+              </section>
+            )}
+
+            {step === 3 && (
+              <section aria-label="Required live camera photos">
+                <p className="rounded-lg border border-gold/30 bg-petal/50 p-4 text-sm leading-relaxed">
+                  Do you allow J &amp; A Pools LLC to access your camera to document your pool condition?
+                </p>
+                {!isCameraReady && (
+                  <button type="button" onClick={startCamera} className="btn-primary mt-4">
+                    <Camera className="h-4 w-4" /> Allow Camera &amp; Start
+                  </button>
+                )}
+                {cameraError && (
+                  <div role="alert" className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm leading-relaxed">
+                    <p>{cameraError}</p>
+                    <a href={TEL_LINK} className="mt-2 inline-block font-semibold underline">Call {BRAND.phoneDisplay} for help</a>
+                  </div>
+                )}
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className={`mt-4 aspect-video w-full rounded-xl bg-black object-cover ${isCameraReady ? 'block' : 'hidden'}`}
+                  aria-label="Live camera preview"
+                />
+                {preview ? (
+                  <div className="mt-4">
+                    <img src={preview} alt="Preview of the live camera photo to save" className="max-h-64 w-full rounded-xl object-contain" />
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      <button type="button" onClick={savePhoto} className="btn-primary">
+                        Preview &amp; Save
+                      </button>
+                      <button type="button" onClick={() => setPreview(null)} className="btn-ghost">Retake</button>
+                    </div>
+                  </div>
+                ) : nextPhoto ? (
+                  <div className="mt-4 rounded-xl border border-espresso/15 bg-cream/60 p-4">
+                    <p className="font-semibold">{PHOTO_LABELS[nextPhoto]} · Photo {PHOTO_ORDER.indexOf(nextPhoto) + 1} of 3</p>
+                    <p className="mt-2 text-sm leading-relaxed text-espresso/75">{PHOTO_PROMPTS[nextPhoto]}</p>
+                    <button type="button" onClick={takeSnapshot} disabled={!isCameraReady} className="btn-primary mt-4 disabled:cursor-not-allowed disabled:opacity-50">
+                      <Camera className="h-4 w-4" /> Take Live Snapshot
+                    </button>
+                  </div>
+                ) : (
+                  <div className="mt-4 rounded-xl border border-gold/35 bg-petal/40 p-4">
+                    <p className="font-semibold">All three photos are saved for this request.</p>
+                    <ul className="mt-3 space-y-2">
+                      {PHOTO_ORDER.map((photo) => (
+                        <li key={photo} className="flex items-center justify-between gap-3 text-sm">
+                          <span>{PHOTO_LABELS[photo]}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPhotos((current) => {
+                                const updated = { ...current };
+                                delete updated[photo];
+                                return updated;
+                              });
+                              setCameraError('');
+                            }}
+                            className="text-xs font-semibold text-bronze underline"
+                          >
+                            Retake
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <p className="mt-4 text-xs leading-relaxed text-espresso/65">
+                  Photos are captured directly from the live camera (no gallery uploads) and stay on this device; this form cannot attach them to a text or email.
+                </p>
+              </section>
+            )}
+
+            {step === 4 && (
+              <section className="space-y-6" aria-label="Scheduling notes and consent">
+                <div>
+                  <label htmlFor="booking-notes" className="field-label">Optional scheduling notes</label>
+                  <textarea
+                    id="booking-notes"
+                    rows={5}
+                    maxLength={1000}
+                    className="field resize-y"
+                    value={form.notes}
+                    onChange={(event) => setField('notes', event.target.value)}
+                    placeholder="Please leave us any notes or gate codes for scheduling."
+                  />
+                </div>
+                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-espresso/15 bg-cream/50 p-4 text-sm leading-relaxed">
+                  <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-1 h-4 w-4 accent-[#2E7D32]" />
+                  <span>I consent to one-time text messages from J &amp; A Pools LLC. Standard carrier SMS and data rates may apply.</span>
+                </label>
+                <p className="text-xs text-espresso/65">
+                  Your request is prepared in your device’s messaging app or default email client for you to review and send.
+                </p>
+              </section>
+            )}
+
+            {step === 5 && (
+              <section aria-label="Review service request">
+                <p className="text-sm leading-relaxed text-espresso/75">
+                  Review the request below. Your messaging app will open on mobile; your default email client will open on desktop.
+                </p>
+                <dl className="mt-5 space-y-3 rounded-xl border border-espresso/15 bg-cream/60 p-5 text-sm">
+                  <div><dt className="font-semibold">Name</dt><dd>{form.name}</dd></div>
+                  <div><dt className="font-semibold">Email</dt><dd>{form.email}</dd></div>
+                  <div><dt className="font-semibold">Phone</dt><dd>{form.phone}</dd></div>
+                  <div><dt className="font-semibold">Pool address</dt><dd>{form.address}</dd></div>
+                  <div><dt className="font-semibold">Plan</dt><dd>{planName}</dd></div>
+                  <div><dt className="font-semibold">Notes</dt><dd>{form.notes || 'None'}</dd></div>
+                  <div><dt className="font-semibold">Live camera photos</dt><dd>{PHOTO_ORDER.map((photo) => `${PHOTO_LABELS[photo]} ${photos[photo] ? 'captured' : 'missing'}`).join(' · ')}</dd></div>
+                </dl>
+                {dispatched && (
+                  <p role="status" className="mt-4 rounded-lg bg-petal p-4 text-sm">
+                    Your message draft is ready. Review it in your messaging or email app and send it to J &amp; A Pools LLC.
+                  </p>
+                )}
+              </section>
+            )}
+          </div>
+
+          <footer className="flex flex-col-reverse gap-3 border-t border-espresso/15 bg-ivory px-5 py-4 sm:flex-row sm:justify-between sm:px-8">
+            {step > 1 ? (
+              <button type="button" onClick={() => setStep((current) => current - 1)} className="btn-ghost">
+                <ArrowLeft className="h-4 w-4" /> Back
+              </button>
+            ) : <span />}
+            {step < 5 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (step === 1 && !validateCustomer()) return;
+                  if (step === 2 && !planChoice) return;
+                  if (step === 3 && !allPhotosCaptured) {
+                    setCameraError('Please capture and save all three live camera photos before continuing.');
+                    return;
+                  }
+                  setStep((current) => current + 1);
+                }}
+                className="btn-primary group"
+              >
+                Continue <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </button>
+            ) : (
+              <button type="submit" className="btn-primary group">
+                Submit Service Request <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </button>
+            )}
+          </footer>
+        </form>
       </div>
     </div>
   );

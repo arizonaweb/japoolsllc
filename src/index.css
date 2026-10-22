@@ -1,4 +1,4 @@
-/* J & A Pools LLC — Aqua & Cloud White with Black Text (Light) + Deep Pool Night (Dark) */
+/* J & A Pools LLC — Desert Beige and Grass Green */
 
 @tailwind base;
 @tailwind components;
@@ -9,53 +9,52 @@
   html.light {
     color-scheme: light;
 
-    /* Brand palette (RGB channels) — Light Mode: Professional Blues & Warm Browns / Sand / Cream */
-    --c-ivory: 252 250 247;     /* Clean Cloud Ivory / Sand (#FCFAF7) */
-    --c-cream: 245 242 236;     /* Soft Warm Sand / Travertine (#F5F2EC) */
-    --c-blush: 196 226 238;     /* Soft Aqua Blue Accent (#C4E2EE) */
-    --c-petal: 224 238 245;     /* Muted Sky / Pool Highlight (#E0EEF5) */
-    --c-espresso: 15 28 44;     /* Deep Navy Blue Ink (#0F1C2C) */
-    --c-bronze: 120 76 46;      /* Rich Espresso / Warm Brown Accent (#784C2E) */
-    --c-gold: 0 142 180;        /* Pure Aquatic Pool Blue Accent (#008EB4) */
+    --c-ivory: 247 244 238;
+    --c-cream: 239 236 228;
+    --c-blush: 224 232 218;
+    --c-petal: 231 240 228;
+    --c-espresso: 26 28 25;
+    --c-bronze: 92 64 51;
+    --c-gold: 46 125 50;
 
-    --background: 195 45% 98%;
-    --foreground: 210 33% 6%;
+    --background: 40 33% 97%;
+    --foreground: 100 6% 10%;
 
-    --card: 195 55% 99%;
-    --card-foreground: 210 33% 6%;
+    --card: 40 33% 98%;
+    --card-foreground: 100 6% 10%;
 
-    --popover: 195 55% 99%;
-    --popover-foreground: 210 33% 6%;
+    --popover: 40 33% 98%;
+    --popover-foreground: 100 6% 10%;
 
-    --primary: 192 100% 39%;
-    --primary-foreground: 195 45% 98%;
+    --primary: 123 46% 34%;
+    --primary-foreground: 40 33% 98%;
 
-    --secondary: 193 58% 92%;
-    --secondary-foreground: 210 33% 6%;
+    --secondary: 44 28% 92%;
+    --secondary-foreground: 100 6% 10%;
 
-    --muted: 194 42% 93%;
-    --muted-foreground: 205 22% 32%;
+    --muted: 43 24% 91%;
+    --muted-foreground: 100 5% 30%;
 
-    --accent: 192 100% 39%;
-    --accent-foreground: 210 33% 6%;
+    --accent: 123 46% 34%;
+    --accent-foreground: 40 33% 98%;
 
     --destructive: 0 68% 44%;
-    --destructive-foreground: 195 45% 98%;
+    --destructive-foreground: 40 33% 98%;
 
-    --border: 194 35% 83%;
-    --input: 194 35% 80%;
-    --ring: 192 100% 39%;
+    --border: 42 14% 78%;
+    --input: 42 14% 78%;
+    --ring: 123 46% 34%;
 
     --radius: 0.25rem;
 
-    --sidebar-background: 195 45% 98%;
-    --sidebar-foreground: 210 33% 6%;
-    --sidebar-primary: 192 100% 39%;
-    --sidebar-primary-foreground: 195 45% 98%;
-    --sidebar-accent: 194 42% 93%;
-    --sidebar-accent-foreground: 210 33% 6%;
-    --sidebar-border: 194 35% 83%;
-    --sidebar-ring: 192 100% 39%;
+    --sidebar-background: 40 33% 97%;
+    --sidebar-foreground: 100 6% 10%;
+    --sidebar-primary: 123 46% 34%;
+    --sidebar-primary-foreground: 40 33% 98%;
+    --sidebar-accent: 43 24% 91%;
+    --sidebar-accent-foreground: 100 6% 10%;
+    --sidebar-border: 42 14% 78%;
+    --sidebar-ring: 123 46% 34%;
   }
 
   /* Automatic device dark mode when not explicitly overridden to .light */
@@ -63,42 +62,42 @@
     :root:not(.light) {
       color-scheme: dark;
 
-      --c-ivory: 7 20 28;         /* Deep Midnight Pool (#07141C) */
-      --c-cream: 12 31 43;        /* Dark Lagoon Surface (#0C1F2B) */
-      --c-blush: 22 92 115;       /* Deep Reef Aqua (#165C73) */
-      --c-petal: 16 45 60;        /* Dark Water Highlight (#102D3C) */
-      --c-espresso: 242 250 252;  /* Cloud White Text on Dark (#F2FAFC) */
-      --c-bronze: 56 214 242;     /* Luminous Pool Aqua (#38D6F2) */
-      --c-gold: 0 200 232;        /* Bright Aqua Accent (#00C8E8) */
+      --c-ivory: 20 30 26;
+      --c-cream: 28 38 32;
+      --c-blush: 62 91 66;
+      --c-petal: 37 59 41;
+      --c-espresso: 245 244 237;
+      --c-bronze: 194 164 139;
+      --c-gold: 111 184 112;
 
-      --background: 203 60% 7%;
-      --foreground: 192 62% 97%;
-      --card: 203 56% 11%;
-      --card-foreground: 192 62% 97%;
-      --popover: 203 56% 11%;
-      --popover-foreground: 192 62% 97%;
-      --primary: 191 100% 45%;
-      --primary-foreground: 203 60% 7%;
-      --secondary: 201 52% 16%;
-      --secondary-foreground: 192 62% 97%;
-      --muted: 202 45% 15%;
-      --muted-foreground: 195 28% 72%;
-      --accent: 191 100% 45%;
-      --accent-foreground: 203 60% 7%;
+      --background: 150 20% 10%;
+      --foreground: 45 30% 95%;
+      --card: 150 16% 14%;
+      --card-foreground: 45 30% 95%;
+      --popover: 150 16% 14%;
+      --popover-foreground: 45 30% 95%;
+      --primary: 123 34% 48%;
+      --primary-foreground: 45 30% 98%;
+      --secondary: 145 16% 20%;
+      --secondary-foreground: 45 30% 95%;
+      --muted: 145 14% 19%;
+      --muted-foreground: 43 18% 72%;
+      --accent: 123 34% 48%;
+      --accent-foreground: 45 30% 98%;
       --destructive: 0 65% 55%;
-      --destructive-foreground: 192 62% 97%;
-      --border: 201 40% 22%;
-      --input: 201 40% 25%;
-      --ring: 191 100% 45%;
+      --destructive-foreground: 45 30% 95%;
+      --border: 145 13% 26%;
+      --input: 145 13% 29%;
+      --ring: 123 34% 48%;
 
-      --sidebar-background: 203 60% 7%;
-      --sidebar-foreground: 192 62% 97%;
-      --sidebar-primary: 191 100% 45%;
-      --sidebar-primary-foreground: 203 60% 7%;
-      --sidebar-accent: 202 45% 15%;
-      --sidebar-accent-foreground: 192 62% 97%;
-      --sidebar-border: 201 40% 22%;
-      --sidebar-ring: 191 100% 45%;
+      --sidebar-background: 150 20% 10%;
+      --sidebar-foreground: 45 30% 95%;
+      --sidebar-primary: 123 34% 48%;
+      --sidebar-primary-foreground: 45 30% 98%;
+      --sidebar-accent: 145 14% 19%;
+      --sidebar-accent-foreground: 45 30% 95%;
+      --sidebar-border: 145 13% 26%;
+      --sidebar-ring: 123 34% 48%;
     }
   }
 
@@ -106,42 +105,42 @@
   html.dark {
     color-scheme: dark;
 
-    --c-ivory: 7 20 28;         /* Deep Midnight Pool (#07141C) */
-    --c-cream: 12 31 43;        /* Dark Lagoon Surface (#0C1F2B) */
-    --c-blush: 22 92 115;       /* Deep Reef Aqua (#165C73) */
-    --c-petal: 16 45 60;        /* Dark Water Highlight (#102D3C) */
-    --c-espresso: 242 250 252;  /* Cloud White Text on Dark (#F2FAFC) */
-    --c-bronze: 56 214 242;     /* Luminous Pool Aqua (#38D6F2) */
-    --c-gold: 0 200 232;        /* Bright Aqua Accent (#00C8E8) */
+    --c-ivory: 20 30 26;
+    --c-cream: 28 38 32;
+    --c-blush: 62 91 66;
+    --c-petal: 37 59 41;
+    --c-espresso: 245 244 237;
+    --c-bronze: 194 164 139;
+    --c-gold: 111 184 112;
 
-    --background: 203 60% 7%;
-    --foreground: 192 62% 97%;
-    --card: 203 56% 11%;
-    --card-foreground: 192 62% 97%;
-    --popover: 203 56% 11%;
-    --popover-foreground: 192 62% 97%;
-    --primary: 191 100% 45%;
-    --primary-foreground: 203 60% 7%;
-    --secondary: 201 52% 16%;
-    --secondary-foreground: 192 62% 97%;
-    --muted: 202 45% 15%;
-    --muted-foreground: 195 28% 72%;
-    --accent: 191 100% 45%;
-    --accent-foreground: 203 60% 7%;
+    --background: 150 20% 10%;
+    --foreground: 45 30% 95%;
+    --card: 150 16% 14%;
+    --card-foreground: 45 30% 95%;
+    --popover: 150 16% 14%;
+    --popover-foreground: 45 30% 95%;
+    --primary: 123 34% 48%;
+    --primary-foreground: 45 30% 98%;
+    --secondary: 145 16% 20%;
+    --secondary-foreground: 45 30% 95%;
+    --muted: 145 14% 19%;
+    --muted-foreground: 43 18% 72%;
+    --accent: 123 34% 48%;
+    --accent-foreground: 45 30% 98%;
     --destructive: 0 65% 55%;
-    --destructive-foreground: 192 62% 97%;
-    --border: 201 40% 22%;
-    --input: 201 40% 25%;
-    --ring: 191 100% 45%;
+    --destructive-foreground: 45 30% 95%;
+    --border: 145 13% 26%;
+    --input: 145 13% 29%;
+    --ring: 123 34% 48%;
 
-    --sidebar-background: 203 60% 7%;
-    --sidebar-foreground: 192 62% 97%;
-    --sidebar-primary: 191 100% 45%;
-    --sidebar-primary-foreground: 203 60% 7%;
-    --sidebar-accent: 202 45% 15%;
-    --sidebar-accent-foreground: 192 62% 97%;
-    --sidebar-border: 201 40% 22%;
-    --sidebar-ring: 191 100% 45%;
+    --sidebar-background: 150 20% 10%;
+    --sidebar-foreground: 45 30% 95%;
+    --sidebar-primary: 123 34% 48%;
+    --sidebar-primary-foreground: 45 30% 98%;
+    --sidebar-accent: 145 14% 19%;
+    --sidebar-accent-foreground: 45 30% 95%;
+    --sidebar-border: 145 13% 26%;
+    --sidebar-ring: 123 34% 48%;
   }
 }
 
@@ -178,12 +177,12 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-3 bg-gold px-7 py-4 text-[11px] uppercase tracking-[0.26em] text-[#07141C] transition-all duration-300 hover:bg-bronze hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ivory;
+    @apply inline-flex items-center justify-center gap-3 bg-gold px-7 py-4 text-[11px] uppercase tracking-[0.26em] text-white transition-all duration-300 hover:bg-bronze hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ivory;
     font-weight: 600;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-3 border border-espresso/75 px-7 py-4 text-[11px] uppercase tracking-[0.26em] text-espresso transition-all duration-300 hover:border-gold hover:bg-gold hover:text-[#07141C] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold;
+    @apply inline-flex items-center justify-center gap-3 border border-espresso/75 px-7 py-4 text-[11px] uppercase tracking-[0.26em] text-espresso transition-all duration-300 hover:border-gold hover:bg-gold hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold;
     font-weight: 600;
   }
 

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Star, ExternalLink } from 'lucide-react';
 import { ABOUT, BRAND, IMAGES, REVIEWS } from '@/data/brand';
 import BrandImage from './BrandImage';
@@ -6,8 +5,6 @@ import Reveal from './Reveal';
 import { ShieldBadgeIcon } from './icons';
 
 export default function About() {
-  const [sliderPos, setSliderPos] = useState(50);
-
   return (
     <section id="about" className="relative bg-ivory" aria-labelledby="about-title">
       <div className="mx-auto grid max-w-[1300px] grid-cols-1 gap-12 px-5 py-24 md:grid-cols-12 md:gap-12 md:px-10 md:py-32">
@@ -18,7 +15,7 @@ export default function About() {
               <img
                 src={IMAGES.monogram}
                 alt="J & A Pools LLC Official Logo"
-                className="mx-auto h-auto w-full max-w-[260px] rounded-lg bg-white p-2 shadow-sm"
+                className="mx-auto h-auto w-full max-w-[260px]"
               />
               <div className="mt-4 border-t border-espresso/10 pt-4">
                 <p className="font-serif text-2xl font-semibold italic text-espresso">Joe C. Campos</p>
@@ -35,13 +32,13 @@ export default function About() {
               src={IMAGES.artistCutout}
               fallback={IMAGES.fallbackSilk}
               alt="J & A Pools LLC technicians servicing a palm-lined Phoenix pool"
-              className="aspect-[4/5] w-full rounded-xl shadow-[0_20px_50px_-25px_rgba(0,119,145,0.45)] ring-1 ring-gold/30"
+              className="aspect-[4/5] w-full rounded-xl shadow-[0_20px_50px_-25px_rgba(46,125,50,0.24)] ring-1 ring-gold/30"
               imgClassName="object-cover object-center"
             />
           </Reveal>
         </div>
 
-        {/* Right column — Story, Interactive Before/After Slider, and Verified Customer Reviews */}
+        {/* Right column — Story and Verified Customer Reviews */}
         <div className="md:col-span-8 lg:col-span-8">
           <Reveal>
             <p className="eyebrow">{ABOUT.accolade}</p>
@@ -63,71 +60,6 @@ export default function About() {
               </Reveal>
             ))}
           </div>
-
-          {/* Interactive Before & After Green-to-Clean Transformation */}
-          <Reveal delay={100} className="mt-14">
-            <div className="rounded-2xl border border-espresso/15 bg-cream/80 p-6 shadow-md">
-              <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
-                <div>
-                  <p className="eyebrow">Real Phoenix Transformation</p>
-                  <h3 className="mt-1 font-serif text-3xl text-espresso">
-                    Before &amp; After <em className="italic text-bronze">Green-to-Clean</em>
-                  </h3>
-                </div>
-                <span className="text-[12px] font-medium text-espresso/75">
-                  Drag slider to compare Before vs. After
-                </span>
-              </div>
-
-              <div className="relative mt-5 aspect-[16/9] w-full overflow-hidden rounded-xl ring-1 ring-espresso/15 select-none">
-                {/* After Image (Full width background) */}
-                <img
-                  src={IMAGES.afterPool}
-                  alt="After J & A Pools LLC service — sparkling clear blue pool"
-                  className="h-full w-full object-cover"
-                />
-                <span className="absolute right-3 top-3 rounded bg-[#007791] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow">
-                  After
-                </span>
-
-                {/* Before Image (Clipped by sliderPos) */}
-                <div
-                  className="absolute inset-y-0 left-0 overflow-hidden"
-                  style={{ width: `${sliderPos}%` }}
-                >
-                  <img
-                    src={IMAGES.beforePool}
-                    alt="Before J & A Pools LLC service — green algae-filled pool"
-                    className="h-full max-w-none object-cover"
-                    style={{ width: '100vw', maxWidth: '820px' }}
-                  />
-                  <span className="absolute left-3 top-3 rounded bg-red-700 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow">
-                    Before
-                  </span>
-                </div>
-
-                {/* Divider handle */}
-                <div
-                  className="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow-[0_0_10px_rgba(0,0,0,0.6)]"
-                  style={{ left: `${sliderPos}%` }}
-                >
-                  <div className="absolute top-1/2 -left-4 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-gold text-[#07141C] font-bold shadow-lg ring-2 ring-white">
-                    ⇄
-                  </div>
-                </div>
-
-                <input
-                  type="range"
-                  min={5}
-                  max={95}
-                  value={sliderPos}
-                  onChange={(e) => setSliderPos(Number(e.target.value))}
-                  aria-label="Compare Before and After pool cleaning"
-                  className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
-                />
-              </div>
-            </div>
-          </Reveal>
 
           {/* Verified 5-Star Yelp & BBB Reviews */}
           <Reveal delay={140} className="mt-14">

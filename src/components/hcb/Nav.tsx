@@ -15,7 +15,7 @@ export function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
       <img
         src={IMAGES.monogram}
         alt="J & A Pools LLC logo"
-        className={`rounded-md object-contain bg-white/90 px-1.5 py-0.5 shadow-sm ring-1 ring-gold/30 ${
+        className={`object-contain ${
           big ? 'h-12 w-auto' : 'h-9 w-auto sm:h-11'
         }`}
       />
@@ -136,7 +136,7 @@ export default function Nav({ onBook }: NavProps) {
             </a>
 
             <button onClick={onBook} className="btn-primary !px-6 !py-3">
-              Schedule Service
+              Schedule Your Pool Service
             </button>
           </div>
 
@@ -186,7 +186,7 @@ export default function Nav({ onBook }: NavProps) {
               }}
               className="border-b border-espresso/15 py-5 text-left text-[13px] font-semibold uppercase tracking-[0.28em] text-bronze"
             >
-              Schedule Service / Get a Quote
+              Schedule Your Pool Service
             </button>
             {NAV_LINKS.map((l) => (
               <button

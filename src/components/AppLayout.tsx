@@ -64,7 +64,7 @@ export default function AppLayout() {
         <ServicesShowcase selected={serviceId} onSelect={handleService} onBook={openBooking} />
         <Retail />
       </main>
-      <Footer onBook={openBooking} />
+      <Footer />
 
       <InstallPrompt />
 

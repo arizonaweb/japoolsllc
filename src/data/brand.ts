@@ -442,7 +442,7 @@ export function calculateEstimate({ serviceId, guests, addOnIds }: EstimateInput
 export const NAV_LINKS = [
   { id: 'about', label: 'About & Results' },
   { id: 'services', label: 'Services' },
-  { id: 'treatments', label: 'Custom Quote' },
+  { id: 'contact', label: 'Contact' },
   { id: 'retail', label: 'Quick Q&A' },
 ];
 

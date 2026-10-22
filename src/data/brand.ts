@@ -35,7 +35,6 @@ export const IMAGES = {
   monogram: `${B}assets/Japools.png`,
   heroTriptych: `${B}assets/cloud_reflection_pool.jpg`,
   poster: `${B}assets/service_overview_board.jpg`,
-  leatherBanner: `${B}assets/before_after.jpg`,
   artistCutout: `${B}assets/team_cleaning_wide.jpg`,
   headshot: `${B}assets/team_cleaning_aqua.jpg`,
   lifestyle: `${B}assets/cloud_reflection_pool.jpg`,

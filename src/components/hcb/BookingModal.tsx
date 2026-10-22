@@ -48,6 +48,10 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
   const dialogRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const activeStepRef = useRef(step);
+  const activeOpenRef = useRef(open);
+  activeStepRef.current = step;
+  activeOpenRef.current = open;
 
   useEffect(() => {
     if (open) {
@@ -58,7 +62,6 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
       setStep(1);
       setForm({ name: '', email: '', phone: '', address: '', notes: '' });
       setConsent(false);
-      setPlanChoice(serviceId);
       setPhotos({});
       setPreview(null);
       setCameraError('');
@@ -112,12 +115,14 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
         audio: false,
         video: { facingMode: { ideal: 'environment' } },
       });
+      if (!activeOpenRef.current || activeStepRef.current !== 6 || !videoRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
       streamRef.current?.getTracks().forEach((track) => track.stop());
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
+      videoRef.current.srcObject = stream;
+      await videoRef.current.play();
       setIsCameraReady(true);
     } catch (error) {
       const cameraErrorName = error instanceof DOMException ? error.name : '';

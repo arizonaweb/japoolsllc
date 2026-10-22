@@ -24,26 +24,21 @@ A modern, responsive, high-performance website and service request application f
 7. **Scheduled Maintenance Plans**: Weekly and bi-weekly residential and commercial pool service.
 
 ## Brand Assets & Visual Identity
-All 10 supplied visual assets have been integrated:
-- `Japools.png`: Official high-resolution transparent PNG logo for navigation, header, and clean overlays.
+- `Japools.png`: Official transparent PNG logo used in navigation and brand displays without a background badge.
 - `ja_logo.jpg`: Alternate high-resolution JPEG logo.
 - `service_overview_board.jpg`: Official service board displayed in Hero showcase, OpenGraph, and Twitter sharing cards.
 - `cloud_reflection_pool.jpg`: Mirror-clear Arizona pool reflecting sky and clouds in Hero visual showcase.
-- `team_cleaning_aqua.jpg`: Technician servicing sparkling aqua pool in Services Showcase.
-- `team_cleaning_wide.jpg`: Technician servicing pool edge in About section and service modal.
-- `before_pool.jpg`: Green algae pool before restoration in interactive comparison slider.
-- `after_pool.jpg`: Sparkling clear blue pool after restoration in interactive comparison slider.
-- `before_after.jpg`: Panoramic Before & After transformation banner in Footer callout.
-- `yelp_reviews.jpg`: Verified customer reviews screenshot in Reviews card.
+- `team_cleaning_aqua.jpg`: Technician servicing a pool in the Hero showcase.
+- `team_cleaning_wide.jpg`: Technician servicing a pool in the About section.
+- `before_pool.jpg` and `after_pool.jpg`: Interactive comparison slider immediately after the Hero and service pillars.
 
-## Color Adaptation (Blues & Browns)
-The palette has been adapted to professional blues and warm browns:
-- **Deep Navy Blue** (`#0F1C2C` / `15 28 44`): Primary headings, navigation, and strong brand ink.
-- **Aquatic Pool Blue** (`#008EB4` / `0 142 180`): Primary interactive elements, buttons, and accents.
-- **Rich Espresso & Warm Brown** (`#784C2E` / `120 76 46`): Contrasting accents, badges, and warm desert stone touches.
-- **Muted Blue & Sky Mist** (`#E0EEF5` & `#C4E2EE`): Card backgrounds, hover states, and supporting elements.
-- **Sand, Cream & Cloud White** (`#F5F2EC` & `#FCFAF7`): Warm travertine and clean neutral foundations.
-- Automatic device `prefers-color-scheme` Dark Mode adaptation and manual theme toggle.
+## Color Adaptation (Beige & Green)
+- **Desert ivory** (`#F7F4EE`) and **travertine** (`#EFECE4`) provide the light-mode foundation.
+- **Grass green** (`#2E7D32`) is used for primary actions and brand accents; charcoal ink (`#1A1C19`) keeps text legible.
+- Dark mode follows the device `prefers-color-scheme` setting and uses muted slate-green surfaces with warm white text.
+
+## Scheduling
+The Schedule Your Pool Service flow collects customer and property details, a service plan, three live camera captures, and optional notes/one-time SMS consent. Captures stay on the visitor's device; the browser opens an SMS draft on mobile or an email draft on desktop with the service details and photo references. The visitor reviews and sends the draft.
 
 ## Tech Stack
 - **Framework**: React 18, TypeScript, Vite 5

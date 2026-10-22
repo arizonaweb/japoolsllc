@@ -26,22 +26,24 @@ export const TEL_LINK = `tel:${BRAND.phoneE164}`;
 export const buildSmsLink = (body: string) =>
   `sms:${BRAND.phoneE164}?body=${encodeURIComponent(body)}`;
 
+const B = import.meta.env.BASE_URL;
+
 // Owner-supplied J & A Pools LLC brand & field imagery
 export const IMAGES = {
-  logoPng: '/assets/Japools.png',
-  logoJpg: '/assets/ja_logo.jpg',
-  monogram: '/assets/Japools.png',
-  heroTriptych: '/assets/cloud_reflection_pool.jpg',
-  poster: '/assets/service_overview_board.jpg',
-  leatherBanner: '/assets/before_after.jpg',
-  artistCutout: '/assets/team_cleaning_wide.jpg',
-  headshot: '/assets/team_cleaning_aqua.jpg',
-  lifestyle: '/assets/cloud_reflection_pool.jpg',
-  beforePool: '/assets/before_pool.jpg',
-  afterPool: '/assets/after_pool.jpg',
-  yelpReviews: '/assets/yelp_reviews.jpg',
-  og: '/assets/service_overview_board.jpg',
-  fallbackSilk: '/assets/cloud_reflection_pool.jpg',
+  logoPng: `${B}assets/Japools.png`,
+  logoJpg: `${B}assets/ja_logo.jpg`,
+  monogram: `${B}assets/Japools.png`,
+  heroTriptych: `${B}assets/cloud_reflection_pool.jpg`,
+  poster: `${B}assets/service_overview_board.jpg`,
+  leatherBanner: `${B}assets/before_after.jpg`,
+  artistCutout: `${B}assets/team_cleaning_wide.jpg`,
+  headshot: `${B}assets/team_cleaning_aqua.jpg`,
+  lifestyle: `${B}assets/cloud_reflection_pool.jpg`,
+  beforePool: `${B}assets/before_pool.jpg`,
+  afterPool: `${B}assets/after_pool.jpg`,
+  yelpReviews: `${B}assets/yelp_reviews.jpg`,
+  og: `${B}assets/service_overview_board.jpg`,
+  fallbackSilk: `${B}assets/cloud_reflection_pool.jpg`,
 };
 
 export interface CoreServicePillar {

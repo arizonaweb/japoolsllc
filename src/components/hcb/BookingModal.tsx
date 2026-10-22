@@ -186,7 +186,9 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const mobileDevice = /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+    const mobileDevice =
+      /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent) ||
+      (/macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
     if (mobileDevice) {
       window.location.href = buildSmsLink(message);
     } else {

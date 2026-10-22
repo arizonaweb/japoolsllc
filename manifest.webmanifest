@@ -1,0 +1,33 @@
+{
+  "name": "J & A Pools LLC",
+  "short_name": "J&A Pools",
+  "description": "Clean, clear pools. Happier days. Professional swimming pool cleaning, water balancing, filter & pump care, repairs, and scheduled maintenance in Phoenix, AZ 85031.",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FCFAF7",
+  "theme_color": "#008EB4",
+  "categories": ["business", "home", "utilities"],
+  "icons": [
+    {
+      "src": "/assets/Japools.png",
+      "sizes": "1196x417",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/ja_logo.jpg",
+      "sizes": "1000x349",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

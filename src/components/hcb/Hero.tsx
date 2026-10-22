@@ -67,7 +67,7 @@ export default function Hero({ onBook }: HeroProps) {
         {/* Visual Showcase Column */}
         <div className="order-1 px-4 pt-6 sm:px-6 md:px-10 lg:order-2 lg:col-span-6 lg:py-14 lg:pl-2">
           <div className="space-y-4">
-            <figure className="relative animate-fade-in overflow-hidden rounded-xl bg-ivory shadow-[0_28px_70px_-28px_rgba(0,119,145,0.45)] ring-1 ring-gold/35">
+            <figure className="relative animate-fade-in overflow-hidden rounded-xl bg-ivory shadow-[0_28px_70px_-28px_rgba(46,125,50,0.24)] ring-1 ring-gold/35">
               <img
                 src={IMAGES.poster}
                 alt="J & A Pools LLC — Pool Service, Cleaning, Repairs & Maintenance in Phoenix, AZ 85031"

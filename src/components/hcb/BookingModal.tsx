@@ -32,7 +32,7 @@ const PHOTO_PROMPTS: Record<PhotoKey, string> = {
   spa: 'Please take a photo of your spa. If you do not have a spa, please take another photo of your pool showing any concerns or details needed.',
   equipment: 'Please take a photo of your pool equipment pad (pump, filter, valves, and timers).',
 };
-const STEP_NAMES = ['Customer & property', 'Service plan', 'Pool photos', 'Notes & consent', 'Submit request'];
+const STEP_NAMES = ['Full name', 'Email address', 'Mobile phone', 'Pool address', 'Service plan', 'Pool photos', 'Notes & consent', 'Submit request'];
 
 export default function BookingModal({ open, onClose, serviceId, onService }: Props) {
   const [step, setStep] = useState(1);
@@ -69,10 +69,14 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
     return () => {
       document.body.style.overflow = '';
     };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) setPlanChoice(serviceId);
   }, [open, serviceId]);
 
   useEffect(() => {
-    if (open && step === 3) return;
+    if (open && step === 6) return;
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     setIsCameraReady(false);
@@ -95,18 +99,6 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
   const setField = (key: keyof FormFields, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
     if (errors[key]) setErrors((current) => ({ ...current, [key]: '' }));
-  };
-
-  const validateCustomer = () => {
-    const nextErrors: Record<string, string> = {};
-    if (!form.name.trim()) nextErrors.name = 'Please enter your full name.';
-    if (!EMAIL_RE.test(form.email.trim())) nextErrors.email = 'Please enter a valid email address.';
-    if (form.phone.replace(/\D/g, '').length < 10) nextErrors.phone = 'Please enter a valid mobile phone number.';
-    if (!form.address.trim() || !/\b\d{5}\b/.test(form.address)) {
-      nextErrors.address = 'Enter the street address and 5-digit ZIP code before continuing to photos.';
-    }
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
   };
 
   const startCamera = async () => {
@@ -214,7 +206,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
       >
         <header className="flex items-start justify-between gap-4 border-b border-espresso/15 px-5 py-5 sm:px-8">
           <div>
-            <p className="eyebrow">J &amp; A Pools LLC · Step {step} of 5</p>
+            <p className="eyebrow">J &amp; A Pools LLC · Step {step} of {STEP_NAMES.length}</p>
             <h2 id="booking-title" className="mt-1 font-serif text-2xl font-semibold sm:text-3xl">
               Schedule Your Pool Service
             </h2>
@@ -224,7 +216,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
           </button>
         </header>
         <div className="px-5 pt-4 sm:px-8">
-          <div className="grid grid-cols-5 gap-1.5" aria-label={`Step ${step} of 5`}>
+          <div className="grid grid-cols-8 gap-1.5" aria-label={`Step ${step} of ${STEP_NAMES.length}`}>
             {STEP_NAMES.map((name, index) => (
               <div key={name} className={`h-1.5 rounded-full ${index < step ? 'bg-gold' : 'bg-espresso/15'}`} />
             ))}
@@ -234,35 +226,43 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
 
         <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
           <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8">
-            {step === 1 && (
+            {step >= 1 && step <= 4 && (
               <section className="space-y-5" aria-label="Customer and property information">
                 <p className="text-sm leading-relaxed text-espresso/75">
                   Share your contact details and Phoenix / Valley pool address. The address and ZIP are required before photos.
                 </p>
-                <div>
-                  <label htmlFor="booking-name" className="field-label">Full name</label>
-                  <input id="booking-name" autoComplete="name" className="field" value={form.name} onChange={(event) => setField('name', event.target.value)} />
-                  <ErrorMessage field="name" />
-                </div>
-                <div>
-                  <label htmlFor="booking-email" className="field-label">Email address</label>
-                  <input id="booking-email" type="email" autoComplete="email" inputMode="email" className="field" value={form.email} onChange={(event) => setField('email', event.target.value)} />
-                  <ErrorMessage field="email" />
-                </div>
-                <div>
-                  <label htmlFor="booking-phone" className="field-label">Mobile phone</label>
-                  <input id="booking-phone" type="tel" autoComplete="tel" className="field" value={form.phone} onChange={(event) => setField('phone', event.target.value)} placeholder="(480) 000-0000" />
-                  <ErrorMessage field="phone" />
-                </div>
-                <div>
-                  <label htmlFor="booking-address" className="field-label">Pool street address and ZIP code</label>
-                  <input id="booking-address" autoComplete="street-address" className="field" value={form.address} onChange={(event) => setField('address', event.target.value)} placeholder="Street, city, AZ 85031" />
-                  <ErrorMessage field="address" />
-                </div>
+                {step === 1 && (
+                  <div>
+                    <label htmlFor="booking-name" className="field-label">What is your full name?</label>
+                    <input id="booking-name" autoComplete="name" className="field" value={form.name} onChange={(event) => setField('name', event.target.value)} />
+                    <ErrorMessage field="name" />
+                  </div>
+                )}
+                {step === 2 && (
+                  <div>
+                    <label htmlFor="booking-email" className="field-label">What email address should we use?</label>
+                    <input id="booking-email" type="email" autoComplete="email" inputMode="email" className="field" value={form.email} onChange={(event) => setField('email', event.target.value)} />
+                    <ErrorMessage field="email" />
+                  </div>
+                )}
+                {step === 3 && (
+                  <div>
+                    <label htmlFor="booking-phone" className="field-label">What is your mobile phone number?</label>
+                    <input id="booking-phone" type="tel" autoComplete="tel" className="field" value={form.phone} onChange={(event) => setField('phone', event.target.value)} placeholder="(480) 000-0000" />
+                    <ErrorMessage field="phone" />
+                  </div>
+                )}
+                {step === 4 && (
+                  <div>
+                    <label htmlFor="booking-address" className="field-label">What is the pool street address and ZIP code?</label>
+                    <input id="booking-address" autoComplete="street-address" className="field" value={form.address} onChange={(event) => setField('address', event.target.value)} placeholder="Street, city, AZ 85031" />
+                    <ErrorMessage field="address" />
+                  </div>
+                )}
               </section>
             )}
 
-            {step === 2 && (
+            {step === 5 && (
               <section aria-label="Select a service plan">
                 <p className="mb-4 text-sm text-espresso/75">Select the service that best fits your pool.</p>
                 <div className="space-y-3">
@@ -301,7 +301,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
               </section>
             )}
 
-            {step === 3 && (
+            {step === 6 && (
               <section aria-label="Required live camera photos">
                 <p className="rounded-lg border border-gold/30 bg-petal/50 p-4 text-sm leading-relaxed">
                   Do you allow J &amp; A Pools LLC to access your camera to document your pool condition?
@@ -375,7 +375,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
               </section>
             )}
 
-            {step === 4 && (
+            {step === 7 && (
               <section className="space-y-6" aria-label="Scheduling notes and consent">
                 <div>
                   <label htmlFor="booking-notes" className="field-label">Optional scheduling notes</label>
@@ -399,7 +399,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
               </section>
             )}
 
-            {step === 5 && (
+            {step === 8 && (
               <section aria-label="Review service request">
                 <p className="text-sm leading-relaxed text-espresso/75">
                   Review the request below. Your messaging app will open on mobile; your default email client will open on desktop.
@@ -428,13 +428,27 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                 <ArrowLeft className="h-4 w-4" /> Back
               </button>
             ) : <span />}
-            {step < 5 ? (
+            {step < 8 ? (
               <button
                 type="button"
                 onClick={() => {
-                  if (step === 1 && !validateCustomer()) return;
-                  if (step === 2 && !planChoice) return;
-                  if (step === 3 && !allPhotosCaptured) {
+                  if (step === 1 && !form.name.trim()) {
+                    setErrors({ name: 'Please enter your full name.' });
+                    return;
+                  }
+                  if (step === 2 && !EMAIL_RE.test(form.email.trim())) {
+                    setErrors({ email: 'Please enter a valid email address.' });
+                    return;
+                  }
+                  if (step === 3 && form.phone.replace(/\D/g, '').length < 10) {
+                    setErrors({ phone: 'Please enter a valid mobile phone number.' });
+                    return;
+                  }
+                  if (step === 4 && (!form.address.trim() || !/\b\d{5}\b/.test(form.address))) {
+                    setErrors({ address: 'Enter the street address and 5-digit ZIP code before continuing to photos.' });
+                    return;
+                  }
+                  if (step === 6 && !allPhotosCaptured) {
                     setCameraError('Please capture and save all three live camera photos before continuing.');
                     return;
                   }

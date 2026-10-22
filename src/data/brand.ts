@@ -160,8 +160,8 @@ export const QUICK_QA: FaqItem[] = [
     answer: 'We are based in Phoenix, AZ 85031 and service surrounding areas.',
   },
   {
-    question: 'How do I get a quote or schedule service?',
-    answer: "Just call or text 480-688-7254 and we'll get you set up quickly.",
+    question: 'How do I schedule service?',
+    answer: "Call 480-688-7254 or use the Schedule Your Pool Service form and we'll get you set up quickly.",
   },
 ];
 
@@ -210,10 +210,10 @@ export const DIRECTORY_LINKS: DirectoryItem[] = [
   {
     id: 'direct-sms',
     brand: 'Fast Text Dispatch',
-    name: 'Text 480-688-7254 for a Quick Quote',
-    description: 'Send a photo of your pool or equipment pad directly to Joe and the J & A Pools team for fast scheduling.',
-    href: buildSmsLink("Hi J & A Pools! I'd like a quote for pool service in the Phoenix area."),
-    cta: 'Text 480-688-7254 Now',
+    name: 'Text 480-688-7254 to Schedule Service',
+    description: 'Send a photo of your pool or equipment pad directly to Joe and the J & A Pools team for scheduling.',
+    href: buildSmsLink("Hi J & A Pools! I'd like to schedule pool service in the Phoenix area."),
+    cta: 'Text 480-688-7254 to Schedule',
   },
   {
     id: 'direct-call',
@@ -304,140 +304,7 @@ export const SERVICES: Service[] = [
   },
 ];
 
-export const TRAVEL = {
-  name: 'Service Area Coverage',
-  label: 'Phoenix, AZ 85031 & Surrounding Valley',
-  min: 0,
-  max: 0,
-};
-
-export type TravelId = 'phoenix-central' | 'east-valley' | 'west-valley';
-
-export const TRAVEL_OPTIONS: { id: TravelId; label: string }[] = [
-  { id: 'phoenix-central', label: 'Phoenix (85031, 85041 & Central Phoenix)' },
-  { id: 'east-valley', label: 'East Valley (Tempe, Mesa, Scottsdale, Chandler)' },
-  { id: 'west-valley', label: 'West Valley (Glendale, Tolleson, Avondale, Peoria)' },
-];
-
-export interface AddOn {
-  id: string;
-  name: string;
-  price: number;
-  badge: string;
-  description?: string;
-  group: 'treatment' | 'menu';
-}
-
-// Core Pool Care Tasks (Group 1)
-export const TREATMENTS: AddOn[] = [
-  {
-    id: 'skimming-vacuuming-brushing',
-    name: 'Full Surface Skimming, Vacuuming & Wall Brushing',
-    price: 0,
-    badge: 'Cleaning',
-    description: 'Complete removal of leaves, desert dust, and floor debris plus tile-line and step brushing.',
-    group: 'treatment',
-  },
-  {
-    id: 'water-chemistry-balancing',
-    name: 'Precision Water Balancing & Sanitizing',
-    price: 0,
-    badge: 'Water Care',
-    description: 'Testing and balancing chlorine, pH, total alkalinity, calcium hardness, and stabilizer for safe, comfortable water.',
-    group: 'treatment',
-  },
-  {
-    id: 'filter-pump-inspection',
-    name: 'Filter & Pump Care Inspection',
-    price: 0,
-    badge: 'Equipment',
-    description: 'Checking pump baskets, skimmer baskets, pressure gauges, o-rings, and backwash/cartridge health.',
-    group: 'treatment',
-  },
-  {
-    id: 'cartridge-deep-clean',
-    name: 'Filter Cartridge / DE Breakdown & Deep Clean',
-    price: 0,
-    badge: 'Filter Care',
-    description: 'Thorough filter disassembly, hose-down, and pressure restoration for peak circulation.',
-    group: 'treatment',
-  },
-];
-
-// Repairs, Upgrades & Property Options (Group 2)
-export const MENU_OPTIONS: AddOn[] = [
-  {
-    id: 'leak-plumbing-repair',
-    name: 'Leak Detection, Plumbing & Valve Repairs',
-    price: 0,
-    badge: 'Repairs',
-    description: 'Troubleshooting suction/pressure leaks, PVC plumbing, check valves, and equipment pad leaks.',
-    group: 'menu',
-  },
-  {
-    id: 'equipment-upgrades',
-    name: 'Pump, Filter & Automation Upgrades',
-    price: 0,
-    badge: 'Upgrades',
-    description: 'Energy-efficient variable-speed pumps, high-capacity filters, salt systems, and smart pool automation.',
-    group: 'menu',
-  },
-  {
-    id: 'green-pool-turnaround',
-    name: 'Before-to-After Green Pool Turnaround',
-    price: 0,
-    badge: 'Restoration',
-    description: 'Multi-visit green swamp recovery to restore murky green water back to sparkling aqua.',
-    group: 'menu',
-  },
-  {
-    id: 'commercial-compliance',
-    name: 'Commercial Pool Service (HOA / Hotel / Multifamily)',
-    price: 0,
-    badge: 'Commercial',
-    description: 'High-frequency commercial pool care and water log documentation for Phoenix properties.',
-    group: 'menu',
-  },
-];
-
-export const ALL_ADDONS: AddOn[] = [...TREATMENTS, ...MENU_OPTIONS];
-
 export const getService = (id: ServiceId) => SERVICES.find((s) => s.id === id) ?? SERVICES[0];
-
-export interface EstimateInput {
-  serviceId: ServiceId;
-  guests: number; // Used for pool count (1 = Single Residential Pool, 2+ = Multiple Pools / Commercial)
-  addOnIds: string[];
-  travel: TravelId;
-}
-
-export interface Estimate {
-  base: number;
-  addOnsPerPerson: number;
-  people: number;
-  subtotal: number;
-  travelMin: number;
-  travelMax: number;
-  min: number;
-  max: number;
-  label: string;
-}
-
-export function calculateEstimate({ serviceId, guests, addOnIds }: EstimateInput): Estimate {
-  const service = getService(serviceId);
-  const count = Math.max(1, guests);
-  return {
-    base: 0,
-    addOnsPerPerson: addOnIds.length,
-    people: count,
-    subtotal: 0,
-    travelMin: 0,
-    travelMax: 0,
-    min: 0,
-    max: 0,
-    label: `${service.priceLabel}${addOnIds.length ? ` + ${addOnIds.length} focus area${addOnIds.length > 1 ? 's' : ''}` : ''}`,
-  };
-}
 
 export const NAV_LINKS = [
   { id: 'about', label: 'About & Results' },
@@ -445,9 +312,6 @@ export const NAV_LINKS = [
   { id: 'contact', label: 'Contact' },
   { id: 'retail', label: 'Quick Q&A' },
 ];
-
-export const ESTIMATE_NOTE =
-  'Fast custom quote — call or text 480-688-7254 and Joe & the J & A Pools team will get you set up quickly.';
 
 export const PAYMENT_LABELS: Record<string, string> = {
   not_collected: 'Quote requested',

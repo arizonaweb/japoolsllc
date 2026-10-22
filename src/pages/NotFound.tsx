@@ -15,7 +15,7 @@ const NotFound = () => {
     <div className="grain relative flex min-h-screen flex-col overflow-hidden bg-cream text-espresso">
       <header className="relative mx-auto flex w-full max-w-[1400px] items-center justify-between px-5 py-6 md:px-10">
         <Link to="/" className="flex items-center gap-3 font-serif text-[20px] font-semibold tracking-[0.12em]">
-          <img src={IMAGES.monogram} alt="J & A Pools LLC" className="h-10 w-auto rounded bg-white p-1" />
+          <img src={IMAGES.monogram} alt="J & A Pools LLC" className="h-10 w-auto object-contain" />
           J &amp; A POOLS LLC
         </Link>
         <a
@@ -41,7 +41,7 @@ const NotFound = () => {
           <Link to="/" className="btn-primary">
             Back to J &amp; A Pools LLC
           </Link>
-          <a href={buildSmsLink("Hi J & A Pools! I'd like a quote for pool service.")} className="btn-ghost">
+          <a href={buildSmsLink("Hi J & A Pools! I'd like to schedule pool service.")} className="btn-ghost">
             <MessageIcon /> Text {BRAND.phoneDisplay}
           </a>
         </div>

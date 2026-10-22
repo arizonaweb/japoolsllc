@@ -132,7 +132,7 @@ export default function Nav({ onBook }: NavProps) {
               className="inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.14em] text-espresso hover:text-bronze"
             >
               <Phone className="h-3.5 w-3.5 text-gold" />
-              {BRAND.phoneDisplay}
+              Call Now · {BRAND.phoneDisplay}
             </a>
 
             <button onClick={onBook} className="btn-primary !px-6 !py-3">

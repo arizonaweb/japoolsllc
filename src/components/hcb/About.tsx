@@ -32,13 +32,13 @@ export default function About() {
               src={IMAGES.artistCutout}
               fallback={IMAGES.fallbackSilk}
               alt="J & A Pools LLC technicians servicing a palm-lined Phoenix pool"
-              className="aspect-[4/5] w-full rounded-xl shadow-[0_20px_50px_-25px_rgba(0,119,145,0.45)] ring-1 ring-gold/30"
+              className="aspect-[4/5] w-full rounded-xl shadow-[0_20px_50px_-25px_rgba(46,125,50,0.24)] ring-1 ring-gold/30"
               imgClassName="object-cover object-center"
             />
           </Reveal>
         </div>
 
-        {/* Right column — Story, Interactive Before/After Slider, and Verified Customer Reviews */}
+        {/* Right column — Story and Verified Customer Reviews */}
         <div className="md:col-span-8 lg:col-span-8">
           <Reveal>
             <p className="eyebrow">{ABOUT.accolade}</p>

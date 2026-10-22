@@ -171,7 +171,7 @@ export default function InstallPrompt() {
               className="flex items-center gap-3 rounded-full py-0.5 pl-1 pr-3 text-left transition-colors hover:bg-cream"
               aria-haspopup="dialog"
             >
-              <img src={IMAGES.monogram} alt="" className="h-8 w-auto rounded bg-white px-1 object-contain" />
+              <img src={IMAGES.monogram} alt="" className="h-8 w-auto object-contain" />
               <span className="leading-tight">
                 <span className="block text-[10px] font-bold uppercase tracking-[0.22em] text-bronze">Save Pool App</span>
                 <span className="block text-[11px] text-espresso/75">
@@ -209,7 +209,7 @@ export default function InstallPrompt() {
 
             <div className="px-6 pb-8 pt-8 sm:px-9">
               <div className="flex items-center gap-4">
-                <img src={IMAGES.monogram} alt="" className="h-12 w-auto rounded-lg bg-white p-1.5 shadow-sm ring-1 ring-gold/30" />
+                <img src={IMAGES.monogram} alt="" className="h-12 w-auto object-contain" />
                 <div>
                   <p className="eyebrow">Quick Access</p>
                   <h2 id="get-app-title" className="mt-1 font-serif text-3xl font-semibold leading-tight">
@@ -242,7 +242,7 @@ export default function InstallPrompt() {
                         aria-selected={tab === t.id}
                         onClick={() => setTab(t.id)}
                         className={`flex items-center justify-center gap-1.5 px-2 py-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] transition-colors ${
-                          tab === t.id ? 'bg-gold text-[#07141C]' : 'bg-ivory text-espresso/75 hover:bg-cream'
+                          tab === t.id ? 'bg-gold text-white' : 'bg-ivory text-espresso/75 hover:bg-cream'
                         }`}
                       >
                         {t.icon}

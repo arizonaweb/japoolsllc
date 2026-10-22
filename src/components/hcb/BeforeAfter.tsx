@@ -32,8 +32,7 @@ export default function BeforeAfter() {
               <img
                 src={IMAGES.beforePool}
                 alt="Before J & A Pools LLC service — green algae-filled pool"
-                className="h-full max-w-none object-cover"
-                style={{ width: 'min(100vw, 1120px)' }}
+                className="h-full w-[calc(100vw-2.5rem)] max-w-[1120px] object-cover"
               />
               <span className="absolute left-3 top-3 rounded bg-red-700 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow">
                 Before

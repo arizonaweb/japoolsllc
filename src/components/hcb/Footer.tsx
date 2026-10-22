@@ -1,5 +1,4 @@
 import { ArrowRight, MapPin, Phone, ShieldCheck } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { BRAND, CORE_PILLARS, IMAGES, NAV_LINKS, SERVICES, TEL_LINK, buildSmsLink } from '@/data/brand';
 import Reveal from './Reveal';
 import { MessageIcon } from './icons';
@@ -148,9 +147,6 @@ export default function Footer({ onBook }: Props) {
           <p>© {new Date().getFullYear()} J &amp; A Pools LLC · Swimming Pools &amp; Pool Service · Phoenix, AZ 85031</p>
           <p className="flex gap-6">
             <span>Owner: Joe C. Campos · Call or Text {BRAND.phoneDisplay}</span>
-            <Link to="/admin" className="text-espresso/50 hover:text-bronze">
-              Dispatch Portal
-            </Link>
           </p>
         </div>
       </div>

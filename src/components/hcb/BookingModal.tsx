@@ -1,11 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { X, ArrowRight, Loader2, Check } from 'lucide-react';
-import {
-  EMAIL_RE,
-  createBooking,
-  sendBookingEmails,
-  subscribeContact,
-} from '@/lib/bookings';
+import { EMAIL_RE } from '@/lib/bookings';
 import {
   ALL_ADDONS,
   BRAND,
@@ -129,39 +124,9 @@ export default function BookingModal(props: Props) {
   const submit = async (ev: FormEvent) => {
     ev.preventDefault();
     if (busy || !validate()) return;
-    setBusy(true);
     setSubmitError('');
-    try {
-      const id = await createBooking({
-        name: form.name,
-        phone: form.phone,
-        email: form.email,
-        serviceId,
-        serviceName: service.name,
-        guests: est.people,
-        addOns: chosen.map(({ id, name, price }) => ({ id, name, price })),
-        date: form.date,
-        time: form.time,
-        travel,
-        location: form.location,
-        notes: form.notes,
-        estimateMin: 0,
-        estimateMax: 0,
-        estimateLabel: est.label,
-        summary,
-      });
-
-      const [emailed] = await Promise.all([
-        sendBookingEmails(id),
-        subscribeContact({ name: form.name, email: form.email, phone: form.phone }, consent),
-      ]);
-
-      setDone({ emailed });
-    } catch (err) {
-      setSubmitError((err as Error).message);
-    } finally {
-      setBusy(false);
-    }
+    setDone({});
+    window.location.href = buildSmsLink(summary);
   };
 
   if (!open) return null;
@@ -428,15 +393,14 @@ export default function BookingModal(props: Props) {
               <span className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-gold bg-petal text-bronze">
                 <Check className="h-6 w-6" strokeWidth={1.8} />
               </span>
-              <p className="eyebrow mt-6">Request Received</p>
+              <p className="eyebrow mt-6">Request Ready to Send</p>
               <h2 id="booking-title" className="display mt-3 text-4xl text-espresso sm:text-5xl">
                 We’ll Get You <em className="italic text-bronze">Set Up Quickly.</em>
               </h2>
               <p className="mt-4 max-w-md text-[15px] leading-relaxed text-espresso/80">
-                Thank you, <strong className="text-espresso">{form.name}</strong>! Joe and the J &amp; A Pools LLC team will
-                reach out to you at <span className="font-semibold text-espresso">{form.phone}</span> or{' '}
-                <span className="font-semibold text-espresso">{form.email}</span> to confirm your pool service schedule and
-                quote.
+                Thank you, <strong className="text-espresso">{form.name}</strong>! Your text message is ready — send it to
+                {BRAND.phoneDisplay} and Joe and the J &amp; A Pools LLC team will reach out to confirm your pool service
+                schedule and quote. If your messaging app didn't open, use the button below or call us.
               </p>
               <div className="mt-6 rounded-xl border border-espresso/15 bg-cream p-5 text-[13px] leading-relaxed text-espresso/85">
                 <p className="font-semibold">{service.name} · {formatDate(form.date)}</p>
@@ -447,7 +411,7 @@ export default function BookingModal(props: Props) {
                   Done
                 </button>
                 <a href={buildSmsLink(summary)} className="btn-ghost">
-                  <MessageIcon /> Also Text {BRAND.phoneDisplay}
+                  <MessageIcon /> Text {BRAND.phoneDisplay}
                 </a>
               </div>
             </div>

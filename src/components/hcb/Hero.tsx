@@ -4,7 +4,6 @@ import { BRAND, IMAGES } from '@/data/brand';
 
 interface HeroProps {
   onBook: () => void;
-  onVideo?: () => void;
 }
 
 const slides = [
@@ -41,17 +40,9 @@ const slides = [
     cta: 'Contact J & A Pools Today',
     action: 'contact',
   },
-  {
-    image: IMAGES.heroTriptych,
-    alt: 'Drone footage of J & A Pools service',
-    headline: 'Professional Pool Service You Can Trust',
-    description: 'Watch our team in action as we deliver the premium pool care that keeps Phoenix pools pristine year-round.',
-    cta: 'Watch Drone Footage',
-    action: 'video',
-  },
 ];
 
-export default function Hero({ onBook, onVideo }: HeroProps) {
+export default function Hero({ onBook }: HeroProps) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -71,7 +62,7 @@ export default function Hero({ onBook, onVideo }: HeroProps) {
   return (
     <section
       id="top"
-      className="relative min-h-[82vh] overflow-hidden bg-slate-900 pt-[116px] text-white"
+      className="relative min-h-[82vh] overflow-hidden bg-slate-900 pt-[190px] text-white"
       aria-roledescription="carousel"
       aria-label="J & A Pools services"
       onMouseEnter={() => setPaused(true)}
@@ -92,7 +83,7 @@ export default function Hero({ onBook, onVideo }: HeroProps) {
         </div>
       ))}
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(82vh-116px)] max-w-[1440px] items-center px-6 py-24 sm:px-12 lg:px-24">
+      <div className="relative z-10 mx-auto flex min-h-[calc(82vh-190px)] max-w-[1440px] items-center px-6 py-24 sm:px-12 lg:px-24">
         <div className={`max-w-3xl ${selected.badge ? 'mx-auto text-center' : ''}`} key={selected.headline}>
           {selected.badge && (
             <div className="mx-auto mb-7 flex h-64 w-64 flex-col items-center justify-center rounded-full border-4 border-[#F5A623] bg-slate-900/45 p-5 text-center shadow-[0_0_0_7px_rgba(255,255,255,0.85),0_0_0_12px_rgba(245,166,35,0.85)] sm:h-72 sm:w-72">
@@ -119,7 +110,6 @@ export default function Hero({ onBook, onVideo }: HeroProps) {
           <button
             onClick={() => {
               if (selected.action === 'estimate') onBook();
-              else if (selected.action === 'video' && onVideo) onVideo();
               else document.getElementById(selected.action)?.scrollIntoView({ behavior: 'smooth' });
             }}
             className="mt-8 inline-flex min-h-12 items-center gap-3 rounded bg-[#F5A623] px-7 py-4 font-heading text-xs font-bold uppercase tracking-[0.12em] text-slate-950 transition-colors hover:bg-[#E09612] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"

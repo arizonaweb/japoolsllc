@@ -81,7 +81,7 @@ interface ServiceCarouselProps {
 
 /**
  * Compact, continuously moving service showcase. A lightweight rAF loop drifts a
- * doubled track from left to right; pointer, touch, keyboard, hover, and
+ * doubled track from right to left; pointer, touch, keyboard, hover, and
  * reduced-motion preferences all pause or steer the motion. Cleans up every
  * listener, observer, and animation frame on unmount.
  */
@@ -140,7 +140,7 @@ export default function ServiceCarousel({ onBook }: ServiceCarouselProps) {
           !dragRef.current.active &&
           now >= pauseUntilRef.current
         ) {
-          offsetRef.current = wrap(offsetRef.current + SPEED * dt, period);
+          offsetRef.current = wrap(offsetRef.current + -SPEED * dt, period);
         }
         track.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
       }
@@ -229,9 +229,7 @@ export default function ServiceCarousel({ onBook }: ServiceCarouselProps) {
           <h2 id="service-carousel-title" className="display mt-3 text-3xl text-espresso sm:text-4xl">
             Every Visit, <span className="text-[#005A9C]">Covered.</span>
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-600">
-            A quick tour of the care J &amp; A Pools LLC brings to Phoenix pools — tap any card to request service.
-          </p>
+          <p className="mt-3 text-sm leading-relaxed text-slate-600">services we offer</p>
         </div>
         <div className="flex items-center gap-2">
           <button

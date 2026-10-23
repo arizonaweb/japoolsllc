@@ -74,14 +74,11 @@ export default function Retail() {
         {/* Official Business Profiles & Verification Directory */}
         <Reveal className="flex flex-col justify-between gap-6 md:flex-row md:items-end mb-10 pt-10 border-t border-espresso/15">
           <div>
-            <p className="eyebrow">Verified Profiles &amp; Direct Dispatch</p>
+            <p className="eyebrow">Learn more about J &amp; A Pools LLC</p>
             <h3 className="display mt-4 text-[clamp(2.2rem,4vw,3.6rem)] text-espresso">
               Connect With <em className="italic text-bronze">J &amp; A Pools LLC.</em>
             </h3>
           </div>
-          <p className="max-w-sm text-[14px] leading-relaxed text-espresso/75">
-            Every profile links directly to our verified Phoenix business listings and instant text/call dispatch.
-          </p>
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">

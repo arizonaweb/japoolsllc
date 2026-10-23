@@ -76,8 +76,9 @@ export default {
       },
       fontFamily: {
         mono: ['JetBrains Mono', 'monospace'],
-        sans: ['Jost', 'Helvetica Neue', 'sans-serif'],
-        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+        sans: ['Inter', 'Helvetica Neue', 'sans-serif'],
+        serif: ['Montserrat', 'Helvetica Neue', 'sans-serif'],
+        heading: ['Montserrat', 'Helvetica Neue', 'sans-serif'],
       },
       borderRadius: {
         lg: 'calc(var(--radius) + 2px)',

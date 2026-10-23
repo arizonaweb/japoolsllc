@@ -9,7 +9,7 @@ interface HeroProps {
 const slides = [
   {
     image: IMAGES.heroPrimary,
-    alt: 'Arizona backyard pool with spa, Baja shelf, and landscaped hillside',
+    alt: 'Backyard pool with spa',
     headline: 'Turning Backyard Pools Into Crystal-Clear Retreats',
     description: 'From weekly maintenance and chemical balancing to equipment automation, we care for Phoenix pools with precision and pride.',
     cta: 'Request an Estimate',
@@ -17,7 +17,7 @@ const slides = [
   },
   {
     image: IMAGES.heroPrimary,
-    alt: 'Clear blue pool at a Phoenix home',
+    alt: 'Residential pool',
     badge: true,
     headline: 'Trusted Pool Care Across Phoenix & the Valley',
     description: 'BBB Accredited Business · A+ Rating · Accredited since 2023',
@@ -26,7 +26,7 @@ const slides = [
   },
   {
     image: IMAGES.equipment,
-    alt: 'Pool equipment and maintenance service in Phoenix, Arizona',
+    alt: 'Pool equipment and filters',
     headline: 'Effortless Pool Care — One Text Away',
     description: 'Pump replacements, filter cleanings, plumbing repairs, and reliable weekly service plans for residential and commercial properties.',
     cta: 'Explore Service Plans',
@@ -34,7 +34,7 @@ const slides = [
   },
   {
     image: IMAGES.heroWater,
-    alt: 'Sparkling clean residential pool reflecting the Arizona sky',
+    alt: 'Residential pool',
     headline: 'Complete Green-to-Clean Pool Recovery',
     description: 'Restore your water with expert algae treatment, brushing, vacuuming, and chemical testing.',
     cta: 'Contact J & A Pools Today',
@@ -49,7 +49,7 @@ export default function Hero({ onBook }: HeroProps) {
   useEffect(() => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (paused || reducedMotion) return;
-    const timer = window.setInterval(() => setActive((index) => (index + 1) % slides.length), 6000);
+    const timer = window.setInterval(() => setActive((index) => (index + 1) % slides.length), 7000);
     return () => window.clearInterval(timer);
   }, [paused]);
 

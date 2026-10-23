@@ -10,6 +10,7 @@ import About from './hcb/About';
 import Retail from './hcb/Retail';
 import Footer from './hcb/Footer';
 import BookingModal from './hcb/BookingModal';
+import BlogModal from './hcb/BlogModal';
 import InstallPrompt from './hcb/InstallPrompt';
 
 type ReturnNotice = null | { tone: 'ok' | 'info'; text: string };
@@ -17,10 +18,13 @@ type ReturnNotice = null | { tone: 'ok' | 'info'; text: string };
 export default function AppLayout() {
   const [serviceId, setServiceId] = useState<ServiceId>('weekly-service');
   const [modalOpen, setModalOpen] = useState(false);
+  const [blogOpen, setBlogOpen] = useState(false);
   const [notice, setNotice] = useState<ReturnNotice>(null);
 
   const openBooking = useCallback(() => setModalOpen(true), []);
   const closeBooking = useCallback(() => setModalOpen(false), []);
+  const openBlog = useCallback(() => setBlogOpen(true), []);
+  const closeBlog = useCallback(() => setBlogOpen(false), []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -42,7 +46,7 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-ivory text-espresso">
-      <Nav onBook={openBooking} />
+      <Nav onBook={openBooking} onBlog={openBlog} />
 
       {notice && (
         <div className="fixed inset-x-0 top-[116px] z-30 flex justify-center px-4 pt-3 animate-slide-in">
@@ -75,6 +79,11 @@ export default function AppLayout() {
         onClose={closeBooking}
         serviceId={serviceId}
         onService={handleService}
+      />
+
+      <BlogModal
+        open={blogOpen}
+        onClose={closeBlog}
       />
     </div>
   );

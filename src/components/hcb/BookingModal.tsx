@@ -428,7 +428,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                 {cameraError && (
                   <div role="alert" className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm leading-relaxed">
                     <p>{cameraError}</p>
-                    <a href={TEL_LINK} className="mt-2 inline-block font-semibold underline">Call {BRAND.phoneDisplay} for help</a>
+                    <a href={TEL_LINK} className="mt-2 inline-block font-semibold underline">Call us for help</a>
                   </div>
                 )}
                 <video
@@ -541,7 +541,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                 {shareOutcome === 'packet' && dispatched && (
                   <div role="status" className="mt-4 rounded-lg bg-petal p-4 text-sm leading-relaxed text-emerald-700">
                     <p className="font-semibold">✓ Request compiled! Your browser can't hand off photos directly, so everything — photos and details — was downloaded as one ready-to-send file, and the details were copied to your clipboard.</p>
-                    <p className="mt-2">Open the downloaded <strong>j-and-a-pools-service-request.html</strong> file and text it to <a href={TEL_LINK} className="font-semibold underline">{BRAND.phoneDisplay}</a> or forward it by email. Your request text is already on your clipboard if you prefer to paste it.</p>
+                    <p className="mt-2">Open the downloaded <strong>j-and-a-pools-service-request.html</strong> file and text it to <a href={`sms:${BRAND.phoneE164}`} className="font-semibold underline">us</a> or forward it by email. Your request text is already on your clipboard if you prefer to paste it.</p>
                   </div>
                 )}
                 {shareOutcome === 'cancelled' && !dispatched && (

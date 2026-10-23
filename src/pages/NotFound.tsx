@@ -22,7 +22,7 @@ const NotFound = () => {
           href={`tel:${BRAND.phoneE164}`}
           className="text-sm font-semibold text-bronze hover:underline"
         >
-          {BRAND.phoneDisplay}
+          Call Now
         </a>
       </header>
 
@@ -34,15 +34,14 @@ const NotFound = () => {
           <em className="italic text-bronze">deep end.</em>
         </h1>
         <p className="mt-6 max-w-md text-[16px] leading-relaxed text-espresso/80">
-          The page you’re looking for isn’t here. Head back to J &amp; A Pools LLC, or text us directly at{' '}
-          {BRAND.phoneDisplay}.
+          The page you’re looking for isn’t here. Head back to J &amp; A Pools LLC, or text us directly — we answer fast.
         </p>
         <div className="mt-10 flex flex-col gap-3 sm:flex-row">
           <Link to="/" className="btn-primary">
             Back to J &amp; A Pools LLC
           </Link>
           <a href={buildSmsLink("Hi J & A Pools! I'd like to schedule pool service.")} className="btn-ghost">
-            <MessageIcon /> Text {BRAND.phoneDisplay}
+            <MessageIcon /> Text Us
           </a>
         </div>
       </main>

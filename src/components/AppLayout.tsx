@@ -6,6 +6,7 @@ import Hero from './hcb/Hero';
 import BeforeAfter from './hcb/BeforeAfter';
 import Gallery from './hcb/Gallery';
 import ServicesShowcase from './hcb/ServicesShowcase';
+import ServiceCarousel from './hcb/ServiceCarousel';
 import About from './hcb/About';
 import Retail from './hcb/Retail';
 import Footer from './hcb/Footer';
@@ -38,7 +39,7 @@ export default function AppLayout() {
     if (booking === 'complete') {
       setNotice({
         tone: 'ok',
-        text: 'Pool service request received! Joe & the J & A Pools team will text or call you from 480-688-7254 to confirm.',
+        text: 'Pool service request received! Joe & the J & A Pools team will text or call you shortly to confirm.',
       });
       clean();
     }
@@ -72,9 +73,10 @@ export default function AppLayout() {
         <Gallery />
         <About />
         <ServicesShowcase selected={serviceId} onSelect={handleService} onBook={openBooking} />
+        <ServiceCarousel onBook={openBooking} />
         <Retail />
       </main>
-      <Footer />
+      <Footer onBook={openBooking} />
 
       <InstallPrompt />
 

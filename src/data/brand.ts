@@ -30,9 +30,13 @@ const B = import.meta.env.BASE_URL;
 
 // Owner-supplied J & A Pools LLC brand & field imagery
 export const IMAGES = {
-  logoPng: `${B}assets/Japools-transparent.png`,
-  logoJpg: `${B}assets/ja_logo.jpg`,
-  monogram: `${B}assets/Japools-transparent.png`,
+  logoPng: `${B}assets/japools_logo_opt_design.png`,
+  logoJpg: `${B}assets/japools_logo_opt_design.png`,
+  monogram: `${B}assets/japools_logo_opt_design.png`,
+  joe: `${B}assets/japools_joe.jpg`,
+  joeWebp: `${B}assets/japools_joe.webp`,
+  residentialService: `${B}assets/japools_image12.png`,
+  pumpLandscape: `${B}assets/japools_pump_landscape_image15.jpg`,
   heroTriptych: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
   heroPrimary: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_05.jpg`,
   heroWater: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
@@ -163,7 +167,7 @@ export const QUICK_QA: FaqItem[] = [
   },
   {
     question: 'How do I schedule service?',
-    answer: "Call 480-688-7254 or use the Schedule Your Pool Service form and we'll get you set up quickly.",
+    answer: "Call us or use the Schedule Your Pool Service form and we'll get you set up quickly.",
   },
 ];
 
@@ -212,18 +216,18 @@ export const DIRECTORY_LINKS: DirectoryItem[] = [
   {
     id: 'direct-sms',
     brand: 'Fast Text Dispatch',
-    name: 'Text 480-688-7254 to Schedule Service',
+    name: 'Text Us to Schedule Service',
     description: 'Send a photo of your pool or equipment pad directly to Joe and the J & A Pools team for scheduling.',
     href: buildSmsLink("Hi J & A Pools! I'd like to schedule pool service in the Phoenix area."),
-    cta: 'Text 480-688-7254 to Schedule',
+    cta: 'Text Us to Schedule',
   },
   {
     id: 'direct-call',
     brand: 'Direct Phone Line',
-    name: 'Call 480-688-7254',
+    name: 'Call J & A Pools Directly',
     description: 'Speak directly with J & A Pools LLC about weekly maintenance, green-to-clean recovery, or equipment repairs.',
     href: TEL_LINK,
-    cta: 'Call 480-688-7254',
+    cta: 'Call Now',
   },
 ];
 
@@ -253,7 +257,7 @@ export const ABOUT = {
       pull: true,
     },
     {
-      text: 'Based in Phoenix, AZ 85031 and servicing surrounding Valley communities, we make getting started effortless—just call or text 480-688-7254 and we will get you set up quickly.',
+      text: 'Based in Phoenix, AZ 85031 and servicing surrounding Valley communities, we make getting started effortless—just call or text us and we will get you set up quickly.',
     },
   ] as { text: string; pull?: boolean }[],
 };

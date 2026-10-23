@@ -26,7 +26,7 @@ export function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
     <img
       src={IMAGES.logoPng}
       alt="J & A Pools LLC"
-      className={`w-auto object-contain ${size === 'lg' ? 'h-12' : 'h-9 sm:h-10'}`}
+      className={`w-auto object-contain ${size === 'lg' ? 'h-14' : 'h-11 sm:h-12'}`}
     />
   );
 }
@@ -63,7 +63,7 @@ export default function Nav({ onBook, onBlog }: NavProps) {
             <div className="flex items-center gap-4 sm:gap-6">
               <a href={TEL_LINK} className="inline-flex items-center gap-2 whitespace-nowrap hover:text-amber-300">
                 <Phone className="h-3.5 w-3.5" />
-                {BRAND.phoneDisplay}
+                Call Now
               </a>
               <a href={`sms:${BRAND.phoneE164}`} className="hidden hover:text-amber-300 sm:inline">
                 Text Us
@@ -139,9 +139,15 @@ export default function Nav({ onBook, onBlog }: NavProps) {
               {label}
             </button>
           ))}
-          <a href={TEL_LINK} className="py-5 text-sm font-semibold text-[#005A9C]">
-            Call {BRAND.phoneDisplay}
-          </a>
+          <div className="flex items-center gap-6 py-5">
+            <a href={TEL_LINK} className="inline-flex items-center gap-2 text-sm font-semibold text-[#005A9C]">
+              <Phone className="h-4 w-4" />
+              Call Now
+            </a>
+            <a href={`sms:${BRAND.phoneE164}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#005A9C]">
+              Text Us
+            </a>
+          </div>
         </nav>
       </div>
     </>

@@ -46,9 +46,9 @@ export default function Footer({ onBook }: FooterProps) {
           </ul>
         </div>
         <div className="py-7 pb-24 text-xs leading-relaxed text-espresso/70 md:pb-7">
-          <p>To obtain this domain and website please contact Nick</p>
+          <p>&copy; 2026 All rights reserved.</p>
           <p className="mt-2">
-            This website is owned and operated by Arizona Web Design Services. &copy; 2026. All rights reserved.
+            This is a real website, I hope you like it. I made it just for you. To obtain this website, all rights to the content, design, and domain name, please don't hesitate to call me.
           </p>
         </div>
       </div>

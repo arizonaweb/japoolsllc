@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { X, Maximize2, Minimize2 } from 'lucide-react';
 
 interface VideoModalProps {

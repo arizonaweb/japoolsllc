@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Check, Camera, X, MapPin, Loader, Send } from 'lucide-react';
 import { BRAND, SERVICES, TEL_LINK, type ServiceId } from '@/data/brand';
 import { EMAIL_RE } from '@/lib/bookings';
+import { saveRequestDetails, supabase, uploadRequestPhoto } from '@/lib/supabase';
 import {
   copyRequestToClipboard,
   downloadRequestPacket,
@@ -79,10 +80,12 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
   const [dispatched, setDispatched] = useState(false);
   const [isAutoPopulating, setIsAutoPopulating] = useState(false);
   const [sending, setSending] = useState(false);
-  const [shareOutcome, setShareOutcome] = useState<ShareResult | 'packet' | null>(null);
+  const [shareOutcome, setShareOutcome] = useState<ShareResult | 'packet' | 'sms' | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const requestIdRef = useRef<string | null>(null);
+  const uploadedRef = useRef<Set<string>>(new Set());
   const activeStepRef = useRef(step);
   const activeOpenRef = useRef(open);
   activeStepRef.current = step;
@@ -106,6 +109,8 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
       setIsAutoPopulating(false);
       setSending(false);
       setShareOutcome(null);
+      requestIdRef.current = null;
+      uploadedRef.current = new Set();
     }
     return () => {
       document.body.style.overflow = '';
@@ -245,6 +250,15 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
   const savePhoto = () => {
     if (!preview || !nextPhoto) return;
     setPhotos((current) => ({ ...current, [nextPhoto]: preview }));
+    if (supabase) {
+      if (!requestIdRef.current) requestIdRef.current = String(Date.now());
+      const photoKey = nextPhoto;
+      const photoData = preview;
+      uploadedRef.current.delete(photoKey);
+      void uploadRequestPhoto(requestIdRef.current, photoKey, photoData).then((ok) => {
+        if (ok) uploadedRef.current.add(photoKey);
+      });
+    }
     setPreview(null);
     setCameraError('');
   };
@@ -282,6 +296,32 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
     setSending(true);
     setShareOutcome(null);
     try {
+      if (supabase && requestIdRef.current) {
+        const requestId = requestIdRef.current;
+        const keys = PHOTO_ORDER.filter((photo) => photos[photo]);
+        await Promise.all(
+          keys
+            .filter((photo) => !uploadedRef.current.has(photo))
+            .map(async (photo) => {
+              if (await uploadRequestPhoto(requestId, photo, photos[photo] as string)) uploadedRef.current.add(photo);
+            }),
+        );
+        const saved = await saveRequestDetails(requestId, request, keys);
+        if (saved) {
+          const body = [
+            'Hi J & A Pools! I just submitted a service request with photos.',
+            `Reference: ${requestId}`,
+            `Name: ${request.name.trim()}`,
+            `Phone: ${request.phone.trim()}`,
+            `Address: ${request.address.trim()}`,
+            `Service: ${request.serviceType}`,
+          ].join('\n');
+          window.location.href = `sms:${BRAND.phoneE164}?body=${encodeURIComponent(body)}`;
+          setShareOutcome('sms');
+          setDispatched(true);
+          return;
+        }
+      }
       const result = await shareRequestBundle(request);
       if (result === 'shared') {
         setShareOutcome('shared');
@@ -546,6 +586,11 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                 {shareOutcome === 'shared' && dispatched && (
                   <p role="status" className="mt-4 rounded-lg bg-petal p-4 text-sm font-semibold text-emerald-700">
                     ✓ Request sent! Your photos and details went out together. You'll hear back within 1 business day to confirm your appointment.
+                  </p>
+                )}
+                {shareOutcome === 'sms' && dispatched && (
+                  <p role="status" className="mt-4 rounded-lg bg-petal p-4 text-sm font-semibold text-emerald-700">
+                    ✓ Your photos and details were securely saved. Tap Send in your text message to notify us, and we'll contact you within 1 business day to confirm service availability.
                   </p>
                 )}
                 {shareOutcome === 'packet' && dispatched && (

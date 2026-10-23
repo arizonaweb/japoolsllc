@@ -72,29 +72,14 @@ export default function Hero({ onBook }: HeroProps) {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false);
       }}
     >
-      {/* SVG turbulence filter for water ripple refraction */}
-      <svg className="sr-only" aria-hidden="true" focusable="false">
-        <defs>
-          <filter id="water-ripple" x="-10%" y="-10%" width="120%" height="120%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015 0.025" numOctaves="3" result="noise" seed="4">
-              <animate attributeName="baseFrequency" dur="10s" values="0.012 0.02;0.02 0.035;0.012 0.02" repeatCount="indefinite" />
-            </feTurbulence>
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
-
       {slides.map((slide, index) => {
         const isActive = active === index;
         return (
           <div
             key={slide.headline}
-            className={`absolute inset-0 transition-all [transition-duration:1400ms] ease-out ${
-              isActive ? 'opacity-100 scale-100' : 'pointer-events-none opacity-0 scale-105'
+            className={`absolute inset-0 transition-opacity [transition-duration:1400ms] ease-in-out ${
+              isActive ? 'opacity-100' : 'pointer-events-none opacity-0'
             }`}
-            style={{
-              filter: isActive ? 'url(#water-ripple)' : undefined,
-            }}
             aria-hidden={!isActive}
           >
             <img
@@ -108,7 +93,6 @@ export default function Hero({ onBook }: HeroProps) {
               fetchPriority={index === 0 ? 'high' : 'auto'}
             />
             <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.4)_55%,rgba(0,0,0,0.18)_100%)]" />
-            {isActive && <div key={`wave-${active}`} className="water-ripple-wave absolute inset-0" />}
           </div>
         );
       })}

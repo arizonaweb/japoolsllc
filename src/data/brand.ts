@@ -40,6 +40,7 @@ export const IMAGES = {
   pumpLandscape: `${B}assets/japools_pump_landscape_image15.jpg`,
   heroTriptych: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
   heroPrimary: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_05.jpg`,
+  heroSlide2: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona.jpg`,
   heroWater: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
   equipment: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_02.jpg`,
   poster: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_05.jpg`,

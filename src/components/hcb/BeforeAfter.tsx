@@ -25,23 +25,25 @@ export default function BeforeAfter() {
               alt="Pool after cleaning showing clear blue water"
               loading="eager"
               decoding="async"
-              className="h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
             />
             <span className="absolute right-3 top-3 rounded bg-[#2E7D32] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow">
               After
             </span>
-            <div className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${sliderPos}%` }}>
-              <img
-                src={IMAGES.beforePool}
-                alt="Pool before cleaning showing algae and green water"
-                loading="eager"
-                decoding="async"
-                className="h-full w-[calc(100vw-2.5rem)] max-w-[1120px] object-cover"
-              />
-              <span className="absolute left-3 top-3 rounded bg-blue-600 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow">
-                Before
-              </span>
-            </div>
+            <img
+              src={IMAGES.beforePool}
+              alt="Pool before cleaning showing algae and green water"
+              loading="eager"
+              decoding="async"
+              style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <span
+              className="absolute left-3 top-3 rounded bg-blue-600 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow transition-opacity"
+              style={{ opacity: sliderPos > 12 ? 1 : 0 }}
+            >
+              Before
+            </span>
             <div
               className="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow-[0_0_10px_rgba(0,0,0,0.6)]"
               style={{ left: `${sliderPos}%` }}

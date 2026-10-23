@@ -9,24 +9,24 @@ interface HeroProps {
 const slides = [
   {
     image: IMAGES.heroPrimary,
-    alt: 'Backyard pool with spa',
+    alt: 'Backyard pool with spa maintained by J & A Pools Phoenix',
     headline: 'Turning Backyard Pools Into Crystal-Clear Retreats',
     description: 'From weekly maintenance and chemical balancing to equipment automation, we care for Phoenix pools with precision and pride.',
     cta: 'Request an Estimate',
     action: 'estimate',
   },
   {
-    image: IMAGES.heroPrimary,
-    alt: 'Residential pool',
+    image: IMAGES.heroSlide2,
+    alt: 'Residential pool service and maintenance in Phoenix',
     badge: true,
     headline: 'Trusted Pool Care Across Phoenix & the Valley',
-    description: 'BBB Accredited Business · A+ Rating · Accredited since 2023',
+    description: 'BBB Accredited Business with A+ Rating. Dependable, honest, and accredited since 2023.',
     cta: 'Explore Pool Care',
     action: 'services',
   },
   {
     image: IMAGES.equipment,
-    alt: 'Pool equipment and filters',
+    alt: 'Pool equipment and filtration systems',
     headline: 'Effortless Pool Care — One Text Away',
     description: 'Pump replacements, filter cleanings, plumbing repairs, and reliable weekly service plans for residential and commercial properties.',
     cta: 'Explore Service Plans',
@@ -34,7 +34,7 @@ const slides = [
   },
   {
     image: IMAGES.heroWater,
-    alt: 'Residential pool',
+    alt: 'Crystal clear swimming pool water restoration',
     headline: 'Complete Green-to-Clean Pool Recovery',
     description: 'Restore your water with expert algae treatment, brushing, vacuuming, and chemical testing.',
     cta: 'Contact J & A Pools Today',
@@ -62,7 +62,7 @@ export default function Hero({ onBook }: HeroProps) {
   return (
     <section
       id="top"
-      className="relative min-h-[82vh] overflow-hidden bg-slate-900 pt-[190px] text-white"
+      className="relative flex min-h-[640px] flex-col justify-center overflow-hidden bg-slate-900 pt-[148px] sm:min-h-[700px] sm:pt-[156px] lg:min-h-[760px] text-white"
       aria-roledescription="carousel"
       aria-label="J & A Pools services"
       onMouseEnter={() => setPaused(true)}
@@ -72,39 +72,48 @@ export default function Hero({ onBook }: HeroProps) {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false);
       }}
     >
-      {slides.map((slide, index) => (
-        <div
-          key={slide.headline}
-          className={`absolute inset-0 transition-opacity duration-1000 ${active === index ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
-          aria-hidden={active !== index}
-        >
-          <img src={slide.image} alt={slide.alt} className="absolute inset-0 h-full w-full object-cover" fetchPriority={index === 0 ? 'high' : 'auto'} />
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.68)_0%,rgba(0,0,0,0.34)_60%,rgba(0,0,0,0.12)_100%)]" />
-        </div>
-      ))}
+      {slides.map((slide, index) => {
+        const isActive = active === index;
+        return (
+          <div
+            key={slide.headline}
+            className={`absolute inset-0 transition-opacity [transition-duration:1400ms] ease-in-out ${
+              isActive ? 'opacity-100' : 'pointer-events-none opacity-0'
+            }`}
+            aria-hidden={!isActive}
+          >
+            <img
+              src={slide.image}
+              alt={slide.alt}
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{
+                transform: isActive ? 'scale(1.03)' : 'scale(1)',
+                transition: 'transform 7000ms ease-out',
+              }}
+              fetchPriority={index === 0 ? 'high' : 'auto'}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.4)_55%,rgba(0,0,0,0.18)_100%)]" />
+          </div>
+        );
+      })}
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(82vh-190px)] max-w-[1440px] items-center px-6 py-24 sm:px-12 lg:px-24">
-        <div className={`max-w-3xl ${selected.badge ? 'mx-auto text-center' : ''}`} key={selected.headline}>
-          {selected.badge && (
-            <div className="mx-auto mb-7 flex h-64 w-64 flex-col items-center justify-center rounded-full border-4 border-[#F5A623] bg-slate-900/45 p-5 text-center shadow-[0_0_0_7px_rgba(255,255,255,0.85),0_0_0_12px_rgba(245,166,35,0.85)] sm:h-72 sm:w-72">
-              <span className="font-heading text-[10px] font-bold uppercase tracking-[0.22em] text-amber-200">J &amp; A Pools LLC</span>
-              <span className="my-3 h-px w-32 bg-white/80" />
-              <span className="font-heading text-lg font-bold uppercase leading-snug">BBB Accredited Business</span>
-              <span className="mt-1 font-heading text-sm font-semibold uppercase tracking-[0.18em] text-amber-200">A+ Rating</span>
-              <span className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em]">Accredited Since 2023</span>
-              <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.12em]">Phoenix &amp; the Valley</span>
+      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] items-center px-6 py-12 sm:px-12 lg:px-24">
+        <div className="max-w-3xl text-left" key={selected.headline}>
+          {selected.badge ? (
+            <div className="mb-5 inline-flex items-center gap-2.5 rounded-full border border-amber-400/80 bg-slate-950/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white shadow-md backdrop-blur-sm">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#F5A623] text-[10px] font-black text-slate-950">A+</span>
+              <span>BBB Accredited Business · Accredited Since 2023</span>
             </div>
-          )}
-          {!selected.badge && (
-            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/40 bg-black/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white">
+          ) : (
+            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/40 bg-black/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm">
               <CheckCircle2 className="h-4 w-4 text-amber-300" />
               {BRAND.serviceArea}
             </p>
           )}
-          <h1 className="font-heading text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[1.05] tracking-[-0.035em]">
+          <h1 className="font-heading text-[clamp(2.25rem,5.5vw,5rem)] font-bold leading-[1.06] tracking-[-0.035em]">
             {selected.headline}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-[1.7] text-white/90 sm:text-lg">
+          <p className="mt-5 max-w-2xl text-base leading-[1.7] text-white/90 sm:text-lg">
             {selected.description}
           </p>
           <button

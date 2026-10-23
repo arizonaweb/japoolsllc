@@ -64,7 +64,8 @@
 
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 132px;
+    scroll-padding-top: 120px;
+    overflow-x: clip;
   }
 
   body {
@@ -73,6 +74,8 @@
     line-height: 1.6;
     font-weight: 400;
     transition: background-color 0.35s ease, color 0.35s ease;
+    overflow-x: clip;
+    max-width: 100vw;
   }
 
   h1,

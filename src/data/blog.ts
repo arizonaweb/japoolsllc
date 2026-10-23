@@ -26,7 +26,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: 'A proper maintenance schedule keeps your Phoenix pool safe, clear, and equipment running smoothly. Here\'s what professional pool maintenance includes each week.',
     content: `## Weekly Pool Maintenance in Phoenix
 
-Phoenix\'s hot, dry climate puts unique stress on pool systems. Weekly maintenance is the foundation of a healthy pool.
+Phoenix's hot, dry climate puts unique stress on pool systems. Weekly maintenance is the foundation of a healthy pool.
 
 ### What Happens During Weekly Pool Maintenance
 

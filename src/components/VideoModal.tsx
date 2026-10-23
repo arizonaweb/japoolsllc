@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { X, Maximize2, Minimize2 } from 'lucide-react';
 
 interface VideoModalProps {
@@ -17,6 +17,24 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title = 'J & A P
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleWindowResize = () => {
+      const maxWidth = Math.max(280, window.innerWidth - 32);
+      const maxHeight = Math.max(160, window.innerHeight - 80);
+      setSize((prev) => ({
+        width: Math.min(prev.width, maxWidth),
+        height: Math.min(prev.height, maxHeight),
+      }));
+      setPosition((prev) => ({
+        x: Math.max(0, Math.min(prev.x, window.innerWidth - Math.min(size.width, maxWidth))),
+        y: Math.max(0, Math.min(prev.y, window.innerHeight - (Math.min(size.height, maxHeight) + 48))),
+      }));
+    };
+    window.addEventListener('resize', handleWindowResize);
+    return () => window.removeEventListener('resize', handleWindowResize);
+  }, [isOpen, size.width, size.height]);
+
   if (!isOpen) return null;
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -30,9 +48,11 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title = 'J & A P
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
+    const maxX = Math.max(0, window.innerWidth - size.width);
+    const maxY = Math.max(0, window.innerHeight - (size.height + 48));
     setPosition({
-      x: Math.max(0, e.clientX - dragOffset.x),
-      y: Math.max(0, e.clientY - dragOffset.y),
+      x: Math.max(0, Math.min(e.clientX - dragOffset.x, maxX)),
+      y: Math.max(0, Math.min(e.clientY - dragOffset.y, maxY)),
     });
   };
 
@@ -138,8 +158,10 @@ export default function VideoModal({ isOpen, onClose, videoSrc, title = 'J & A P
             const startHeight = size.height;
 
             const handleMove = (moveEvent: MouseEvent) => {
-              const newWidth = Math.max(300, startWidth + (moveEvent.clientX - startX));
-              const newHeight = Math.max(169, startHeight + (moveEvent.clientY - startY));
+              const maxWidth = Math.max(300, window.innerWidth - position.x - 16);
+              const maxHeight = Math.max(169, window.innerHeight - position.y - 64);
+              const newWidth = Math.min(maxWidth, Math.max(300, startWidth + (moveEvent.clientX - startX)));
+              const newHeight = Math.min(maxHeight, Math.max(169, startHeight + (moveEvent.clientY - startY)));
               setSize({ width: newWidth, height: newHeight });
             };
 

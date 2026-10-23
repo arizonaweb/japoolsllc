@@ -4,6 +4,7 @@ import { type ServiceId } from '@/data/brand';
 import Nav from './hcb/Nav';
 import Hero from './hcb/Hero';
 import BeforeAfter from './hcb/BeforeAfter';
+import Gallery from './hcb/Gallery';
 import ServicesShowcase from './hcb/ServicesShowcase';
 import About from './hcb/About';
 import Retail from './hcb/Retail';
@@ -44,7 +45,7 @@ export default function AppLayout() {
       <Nav onBook={openBooking} />
 
       {notice && (
-        <div className="fixed inset-x-0 top-[76px] z-30 flex justify-center px-4 pt-3 animate-slide-in">
+        <div className="fixed inset-x-0 top-[116px] z-30 flex justify-center px-4 pt-3 animate-slide-in">
           <div
             role="status"
             className="flex max-w-2xl items-start gap-4 rounded-xl border border-gold bg-cream px-5 py-4 text-[13px] leading-relaxed text-espresso shadow-lg"
@@ -60,6 +61,7 @@ export default function AppLayout() {
       <main>
         <Hero onBook={openBooking} />
         <BeforeAfter />
+        <Gallery />
         <About />
         <ServicesShowcase selected={serviceId} onSelect={handleService} onBook={openBooking} />
         <Retail />

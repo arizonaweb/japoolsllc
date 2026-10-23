@@ -23,7 +23,8 @@ const PILLAR_LINKS: Record<ServiceId, { labels: string[]; ids: string[] }> = {
 
 export default function ServicesShowcase({ selected, onSelect, onBook }: Props) {
   return (
-    <section id="services" className="relative overflow-hidden border-y border-espresso/15 bg-cream text-espresso">
+    <section id="services" className="relative scroll-mt-32 overflow-hidden border-y border-espresso/15 bg-cream text-espresso">
+      <span id="maintenance" className="absolute top-0 scroll-mt-32" />
       <div className="grain absolute inset-0" />
       <div className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32">
         <Reveal className="max-w-3xl">

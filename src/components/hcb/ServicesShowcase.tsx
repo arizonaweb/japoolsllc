@@ -49,6 +49,9 @@ export default function ServicesShowcase({ selected, onSelect, onBook }: Props) 
                       : 'border-espresso/15 bg-ivory hover:border-gold/60'
                   }`}
                 >
+                  <div className="sr-only" aria-hidden="true">
+                    {pillarLinks.ids.map((id) => <span key={id} id={id} />)}
+                  </div>
                   <h3 className="font-serif text-2xl font-semibold text-espresso sm:text-3xl">{service.name}</h3>
                   <p className="mt-3 text-[14px] leading-relaxed text-espresso/80">{service.description}</p>
                   <p className="mt-5 text-[11px] font-bold uppercase tracking-[0.18em] text-bronze">

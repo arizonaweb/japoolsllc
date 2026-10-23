@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Check, Download, Home, Monitor, MoreVertical, PlusSquare, Share, Smartphone, X } from 'lucide-react';
-import { BRAND, IMAGES } from '@/data/brand';
+import { IMAGES } from '@/data/brand';
 import {
   canPromptInstall,
   detectPlatform,
@@ -43,7 +43,7 @@ const STEPS: Record<Tab, Step[]> = {
     {
       icon: <Home className={iconCls} strokeWidth={1.5} />,
       title: 'Open anytime in one tap',
-      body: `Schedule pool service or text ${BRAND.phoneDisplay} right from your home screen.`,
+      body: 'Schedule pool service or text us right from your home screen.',
     },
   ],
   android: [
@@ -65,7 +65,7 @@ const STEPS: Record<Tab, Step[]> = {
     {
       icon: <Home className={iconCls} strokeWidth={1.5} />,
       title: 'Open anytime in one tap',
-      body: `Request pool cleaning, repairs, or text ${BRAND.phoneDisplay} in seconds.`,
+      body: 'Request pool cleaning, repairs, or text us in seconds.',
     },
   ],
   computer: [
@@ -218,7 +218,7 @@ export default function InstallPrompt() {
                 </div>
               </div>
               <p className="mt-4 text-[14px] leading-relaxed text-espresso/75">
-                Add J &amp; A Pools LLC to your home screen for one-tap service requests and texting {BRAND.phoneDisplay}.
+                Add J &amp; A Pools LLC to your home screen for one-tap service requests and texting.
               </p>
 
               {nativeReady && !installed && (

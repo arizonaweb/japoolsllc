@@ -1,6 +1,5 @@
 import { Star, ExternalLink } from 'lucide-react';
 import { ABOUT, BRAND, IMAGES, REVIEWS } from '@/data/brand';
-import BrandImage from './BrandImage';
 import Reveal from './Reveal';
 import { ShieldBadgeIcon } from './icons';
 
@@ -28,13 +27,18 @@ export default function About() {
               </div>
             </div>
 
-            <BrandImage
-              src={IMAGES.artistCutout}
-              fallback={IMAGES.fallbackSilk}
-              alt="J & A Pools LLC technicians servicing a palm-lined Phoenix pool"
-              className="aspect-[4/5] w-full rounded-xl shadow-[0_20px_50px_-25px_rgba(46,125,50,0.24)] ring-1 ring-gold/30"
-              imgClassName="object-cover object-center"
-            />
+            <Reveal from="bottom-left" delay={140}>
+              <picture>
+                <source srcSet={IMAGES.joeWebp} type="image/webp" />
+                <img
+                  src={IMAGES.joe}
+                  alt="Owner Joe C. Campos of J & A Pools LLC servicing pool equipment in Phoenix"
+                  loading="eager"
+                  decoding="async"
+                  className="aspect-square w-full rounded-xl object-cover object-center shadow-[0_20px_50px_-25px_rgba(46,125,50,0.24)] ring-1 ring-gold/30"
+                />
+              </picture>
+            </Reveal>
           </Reveal>
         </div>
 

@@ -6,8 +6,15 @@ interface RevealProps {
   delay?: number;
   as?: ElementType;
   /** Direction the content glides in from as it scrolls into view. */
-  from?: 'bottom' | 'left';
+  from?: 'bottom' | 'left' | 'bottom-left' | 'bottom-right';
 }
+
+const HIDDEN: Record<NonNullable<RevealProps['from']>, string> = {
+  bottom: 'opacity-0 translate-y-6',
+  left: 'opacity-0 -translate-x-10',
+  'bottom-left': 'opacity-0 -translate-x-10 translate-y-8',
+  'bottom-right': 'opacity-0 translate-x-10 translate-y-8',
+};
 
 export default function Reveal({ children, className = '', delay = 0, as: Tag = 'div', from = 'bottom' }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
@@ -33,8 +40,8 @@ export default function Reveal({ children, className = '', delay = 0, as: Tag = 
     return () => io.disconnect();
   }, []);
 
-  const hidden = from === 'left' ? 'opacity-0 -translate-x-10' : 'opacity-0 translate-y-6';
-  const shown = from === 'left' ? 'opacity-100 translate-x-0' : 'opacity-100 translate-y-0';
+  const hidden = HIDDEN[from];
+  const shown = 'opacity-100 translate-x-0 translate-y-0';
 
   return (
     <Tag

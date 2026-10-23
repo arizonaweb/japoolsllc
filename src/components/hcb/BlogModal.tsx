@@ -127,7 +127,7 @@ export default function BlogModal({ open, onClose }: BlogModalProps) {
                           href="tel:+14806887254"
                           className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg border border-[#005A9C] text-[#005A9C] font-semibold hover:bg-[#005A9C]/5 transition"
                         >
-                          Call 480-688-7254
+                          Call Now
                         </a>
                       </div>
                     </div>

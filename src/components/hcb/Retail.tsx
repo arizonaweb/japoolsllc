@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ArrowUpRight, ChevronDown, HelpCircle } from 'lucide-react';
-import { BRAND, DIRECTORY_LINKS, QUICK_QA } from '@/data/brand';
+import { ArrowUpRight, ChevronDown, HelpCircle, Phone } from 'lucide-react';
+import { BRAND, DIRECTORY_LINKS, QUICK_QA, TEL_LINK, buildSmsLink } from '@/data/brand';
 import Reveal from './Reveal';
+import { MessageIcon } from './icons';
 
 export default function Retail() {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
@@ -20,12 +21,18 @@ export default function Retail() {
               </h2>
               <p className="mt-5 text-[15px] leading-relaxed text-espresso/80">
                 Have a question about weekly scheduling, green pool recovery, or equipment repairs in Phoenix, AZ{' '}
-                {BRAND.zipCode}? Call or text us directly at{' '}
-                <a href={`tel:${BRAND.phoneE164}`} className="font-semibold text-bronze underline">
-                  {BRAND.phoneDisplay}
-                </a>
-                .
+                {BRAND.zipCode}? Reach out directly — we answer fast.
               </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href={TEL_LINK} className="btn-primary">
+                  <Phone className="h-4 w-4" strokeWidth={1.8} />
+                  Call Now
+                </a>
+                <a href={buildSmsLink('Hi J & A Pools! I have a question about pool service.')} className="btn-ghost">
+                  <MessageIcon className="h-4 w-4" />
+                  Text Us
+                </a>
+              </div>
             </div>
 
             <div className="lg:col-span-7 space-y-3">

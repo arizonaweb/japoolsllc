@@ -5,29 +5,24 @@ import Reveal from './Reveal';
 
 const photos = [
   {
-    src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_05.jpg`,
-    alt: 'Phoenix backyard residential pool with spa features - J & A Pools service example',
-    title: 'Backyard Pool & Spa',
-  },
-  {
     src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
     alt: 'Clear blue residential pool water maintained by J & A Pools Phoenix',
-    title: 'Clear Pool Water',
+    title: 'Licensed, Bonded & Insured',
   },
   {
-    src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona.jpg`,
+    src: `${import.meta.env.BASE_URL}assets/japools_image12.png`,
     alt: 'Residential swimming pool cleaning and maintenance service in Phoenix Arizona',
     title: 'Residential Pool Service',
   },
   {
-    src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_03.jpg`,
+    src: `${import.meta.env.BASE_URL}assets/japools_pump_landscape_image15.jpg`,
     alt: 'Professional pool maintenance work performed by J & A Pools technician',
     title: 'Professional Pool Maintenance',
   },
   {
     src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_02.jpg`,
     alt: 'Pool filtration and pump equipment service and upgrades in Phoenix',
-    title: 'Equipment & Filtration Service',
+    title: 'New Installs, Upgrades, and Improvements',
   },
 ];
 
@@ -51,7 +46,7 @@ export default function Gallery() {
               Explore pool and equipment photography from J &amp; A Pools LLC.
             </p>
           </Reveal>
-          <div className="mt-9 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-9 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {photos.map((photo, index) => (
               <Reveal key={photo.src} delay={index * 40}>
                 <Dialog.Trigger asChild>

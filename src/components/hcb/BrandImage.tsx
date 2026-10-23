@@ -12,7 +12,6 @@ interface BrandImageProps {
 /**
  * Renders supplied brand imagery from /assets. If a file is missing, it
  * falls back to a quiet editorial texture so the layout never breaks.
- * Images load eagerly to ensure instant display without progressive rendering.
  */
 export default function BrandImage({
   src,
@@ -31,12 +30,11 @@ export default function BrandImage({
         src={current}
         alt={alt}
         loading={eager ? 'eager' : 'lazy'}
-        decoding="async"
         onLoad={() => setLoaded(true)}
         onError={() => {
           if (fallback && current !== fallback) setCurrent(fallback);
         }}
-        className={`h-full w-full object-cover transition-opacity duration-700 ${
+        className={`h-full w-full object-cover transition-opacity duration-1000 ${
           loaded ? 'opacity-100' : 'opacity-0'
         } ${imgClassName}`}
       />

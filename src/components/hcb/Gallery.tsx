@@ -61,7 +61,7 @@ export default function Gallery() {
                     aria-label={`Enlarge photo: ${photo.title}`}
                     className="group relative block w-full overflow-hidden rounded-xl bg-slate-100 text-left shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005A9C]"
                   >
-                    <img src={photo.src} alt={photo.alt} loading="eager" decoding="async" className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <img src={photo.src} alt={photo.alt} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-5 pb-4 pt-12 font-heading text-sm font-semibold text-white">
                       {photo.title}
                     </span>
@@ -91,10 +91,9 @@ export default function Gallery() {
               <button onClick={() => move(-1)} aria-label="Previous photo" className="absolute left-3 rounded-full bg-white/15 p-3 text-white hover:bg-white/30 sm:left-8">
                 <ArrowLeft className="h-6 w-6" />
               </button>
-              <figure className="max-h-full max-w-6xl relative">
-                <img src={photos[selected].src} alt={photos[selected].alt} loading="eager" decoding="async" className="max-h-[82vh] max-w-full rounded-lg object-contain" />
+              <figure className="max-h-full max-w-6xl">
+                <img src={photos[selected].src} alt={photos[selected].alt} className="max-h-[82vh] max-w-full rounded-lg object-contain" />
                 <figcaption className="mt-3 text-center font-heading text-sm font-semibold text-white">{photos[selected].title}</figcaption>
-                <img src={IMAGES.logoPng} alt="J & A Pools LLC" className="absolute bottom-4 right-4 h-12 sm:h-14 opacity-80" />
               </figure>
               <button onClick={() => move(1)} aria-label="Next photo" className="absolute right-3 rounded-full bg-white/15 p-3 text-white hover:bg-white/30 sm:right-8">
                 <ArrowRight className="h-6 w-6" />

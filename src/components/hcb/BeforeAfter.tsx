@@ -11,7 +11,7 @@ export default function BeforeAfter() {
         <div className="rounded-2xl border border-espresso/15 bg-cream/80 p-5 shadow-md sm:p-7 backdrop-blur-sm">
           <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
             <div>
-              <p className="eyebrow">Real Phoenix Transformation</p>
+              <p className="eyebrow">Try Me!</p>
               <h2 id="transformation-title" className="mt-1 font-serif text-3xl text-espresso">
                 Before &amp; After <em className="italic text-bronze">Green-to-Clean</em>
               </h2>

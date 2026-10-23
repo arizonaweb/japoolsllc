@@ -33,6 +33,14 @@ export function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
 
 export default function Nav({ onBook, onBlog }: NavProps) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled((prev) => (prev ? window.scrollY > 10 : window.scrollY > 60));
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -82,9 +90,26 @@ export default function Nav({ onBook, onBlog }: NavProps) {
         </div>
 
         <div className="bg-white text-slate-800">
-          <div className="mx-auto flex min-h-[76px] max-w-[1440px] items-center justify-between gap-5 px-4 sm:px-6 lg:px-10">
-            <a href="#top" onClick={(event) => { event.preventDefault(); go('top'); }} aria-label="J & A Pools LLC home">
-              <Wordmark />
+          <div
+            className={`relative mx-auto flex max-w-[1440px] justify-end gap-5 px-4 transition-[height] duration-700 ease-in-out sm:px-6 lg:px-10 ${
+              scrolled ? 'h-[76px] items-center' : 'h-[150px] items-end pb-3'
+            }`}
+          >
+            <a
+              href="#top"
+              onClick={(event) => { event.preventDefault(); go('top'); }}
+              aria-label="J & A Pools LLC home"
+              className={`absolute transition-all duration-700 ease-in-out ${
+                scrolled
+                  ? 'left-4 top-1/2 -translate-x-0 -translate-y-1/2 sm:left-6 lg:left-10'
+                  : 'left-1/2 top-3 -translate-x-1/2 translate-y-0'
+              }`}
+            >
+              <img
+                src={IMAGES.logoPng}
+                alt="J & A Pools LLC"
+                className={`w-auto object-contain transition-all duration-700 ease-in-out ${scrolled ? 'h-11 sm:h-12' : 'h-24 sm:h-28'}`}
+              />
             </a>
             <nav className="hidden flex-1 flex-wrap items-center justify-end gap-x-4 gap-y-2 2xl:flex" aria-label="Primary">
               {primaryLinks.map(({ id, label }) => (
@@ -112,7 +137,8 @@ export default function Nav({ onBook, onBlog }: NavProps) {
 
       <div
         id="mobile-menu"
-        className={`fixed inset-x-0 bottom-0 top-[116px] z-[45] overflow-y-auto bg-white transition-all duration-300 2xl:hidden ${
+        style={{ top: scrolled ? 116 : 190 }}
+        className={`fixed inset-x-0 bottom-0 z-[45] overflow-y-auto bg-white transition-all duration-300 2xl:hidden ${
           open ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
         }`}
         aria-hidden={!open}

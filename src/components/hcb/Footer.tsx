@@ -13,8 +13,7 @@ export default function Footer({ onBook }: FooterProps) {
       <div className="relative mx-auto max-w-[1400px] px-5 md:px-10">
         <div className="flex flex-col justify-between gap-8 border-b border-espresso/15 py-12 sm:flex-row sm:items-center">
           <div>
-            <p className="eyebrow">Contact &amp; Profiles</p>
-            <p className="mt-2 font-serif text-2xl font-semibold">J &amp; A Pools LLC</p>
+            <p className="font-serif text-2xl font-semibold">J &amp; A Pools LLC</p>
             <p className="mt-1 text-[13px] text-espresso/75">Phoenix, AZ {BRAND.zipCode}</p>
             <button type="button" onClick={onBook} className="btn-primary mt-5">
               <CalendarCheck className="h-4 w-4" strokeWidth={1.8} />

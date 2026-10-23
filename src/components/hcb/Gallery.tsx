@@ -91,10 +91,9 @@ export default function Gallery() {
               <button onClick={() => move(-1)} aria-label="Previous photo" className="absolute left-3 rounded-full bg-white/15 p-3 text-white hover:bg-white/30 sm:left-8">
                 <ArrowLeft className="h-6 w-6" />
               </button>
-              <figure className="max-h-full max-w-6xl relative">
+              <figure className="max-h-full max-w-6xl">
                 <img src={photos[selected].src} alt={photos[selected].alt} loading="eager" decoding="async" className="max-h-[82vh] max-w-full rounded-lg object-contain" />
                 <figcaption className="mt-3 text-center font-heading text-sm font-semibold text-white">{photos[selected].title}</figcaption>
-                <img src={IMAGES.logoPng} alt="J & A Pools LLC" className="absolute bottom-4 right-4 h-12 sm:h-14 opacity-80" />
               </figure>
               <button onClick={() => move(1)} aria-label="Next photo" className="absolute right-3 rounded-full bg-white/15 p-3 text-white hover:bg-white/30 sm:right-8">
                 <ArrowRight className="h-6 w-6" />

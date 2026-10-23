@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, Check, Camera, X, MapPin, Loader } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Camera, X, MapPin, Loader, Download, Copy } from 'lucide-react';
 import { BRAND, SERVICES, TEL_LINK, buildSmsLink, type ServiceId } from '@/data/brand';
 import { EMAIL_RE } from '@/lib/bookings';
+import { 
+  formatRequestAsText, 
+  copyRequestToClipboard, 
+  downloadAllImages,
+  saveRequestToTemporaryStorage,
+  type PoolServiceRequest
+} from '@/lib/pool-request-utils';
 
 interface Props {
   open: boolean;
@@ -32,7 +39,7 @@ const PHOTO_PROMPTS: Record<PhotoKey, string> = {
   spa: 'Please take a photo of your spa. If you do not have a spa, please take another photo of your pool showing any concerns or details needed.',
   equipment: 'Please take a photo of your pool equipment pad (pump, filter, valves, and timers).',
 };
-const STEP_NAMES = ['Full name', 'Email address', 'Mobile phone', 'Pool address', 'Service plan', 'Pool photos', 'Notes & consent', 'Submit request'];
+const STEP_NAMES = ['Full name', 'Email address', 'Mobile phone', 'Pool address', 'Service plan', 'Pool photos', 'Notes & consent', 'Submit request', 'Choose delivery method'];
 
 // Address auto-population for Phoenix-area addresses
 const PHOENIX_AREA_ZIPS = [
@@ -68,6 +75,8 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [dispatched, setDispatched] = useState(false);
   const [isAutoPopulating, setIsAutoPopulating] = useState(false);
+  const [submissionMethod, setSubmissionMethod] = useState<'email' | 'sms' | 'copy' | null>(null);
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -92,6 +101,8 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
       setErrors({});
       setDispatched(false);
       setIsAutoPopulating(false);
+      setSubmissionMethod(null);
+      setCopiedToClipboard(false);
     }
     return () => {
       document.body.style.overflow = '';
@@ -242,73 +253,69 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
 
   const planName = planChoice === 'consultation' ? 'Quick consultation callback' : selectedService.name;
   
-  // Build message with embedded photo data
-  const buildMessageWithPhotos = () => {
-    const baseMessage = [
-      'J & A Pools LLC — Pool Service Request',
-      '',
-      `Name: ${form.name.trim()}`,
-      `Email: ${form.email.trim()}`,
-      `Phone: ${form.phone.trim()}`,
-      `Pool address: ${form.address.trim()}`,
-      `Service plan: ${planName}`,
-      `Notes / gate codes: ${form.notes.trim() || 'None'}`,
-      `SMS consent: ${consent ? 'Yes' : 'No'}`,
-      '',
-      'PHOTOS CAPTURED:',
-      ...PHOTO_ORDER.map((photo) => `• ${PHOTO_LABELS[photo]}: ${photos[photo] ? 'Included ✓' : 'Not captured'}`),
-      '',
-      'We will review your photos and contact you within 1 business day to confirm the service appointment.',
-    ].join('\n');
+  // Build complete request object
+  const buildPoolServiceRequest = (): PoolServiceRequest => ({
+    name: form.name,
+    email: form.email,
+    phone: form.phone,
+    address: form.address,
+    serviceType: planName,
+    notes: form.notes,
+    smsConsent: consent,
+    photos,
+  });
 
-    return baseMessage;
-  };
+  const message = formatRequestAsText(buildPoolServiceRequest());
 
-  const message = buildMessageWithPhotos();
-
-  const submit = (event: FormEvent) => {
+  // Handle submission - step 8 button click
+  const handleSubmitClick = async (event: FormEvent) => {
     event.preventDefault();
+    
+    // Save request to temporary storage
+    const request = buildPoolServiceRequest();
+    await saveRequestToTemporaryStorage(request);
+
     const mobileDevice =
       /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent) ||
       (/macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
     
     if (mobileDevice) {
-      // Mobile: Send SMS with message and photos embedded in MMS
-      const smsMessage = message;
-      window.location.href = buildSmsLink(smsMessage);
-      
-      // For MMS with images, store photos in session for potential multi-part handling
-      if (Object.keys(photos).length > 0) {
-        sessionStorage.setItem('poolServicePhotos', JSON.stringify(photos));
-      }
+      // Show mobile submission options
+      setSubmissionMethod(null); // Reset to show options
+      setStep(9); // New step for choosing submission method
     } else {
-      // Desktop: Send email with embedded images as attachments and HTML body
-      const emailSubject = encodeURIComponent('J & A Pools LLC Service Request');
-      
-      // Create HTML body with embedded images
-      let htmlBody = message.replace(/\n/g, '<br/>');
-      
-      // Add embedded image previews to the email body
-      if (Object.keys(photos).length > 0) {
-        htmlBody += '<br/><br/><strong>Photos:</strong><br/>';
-        PHOTO_ORDER.forEach((photoKey) => {
-          if (photos[photoKey]) {
-            htmlBody += `<br/><strong>${PHOTO_LABELS[photoKey]}:</strong><br/>`;
-            htmlBody += `<img src="${photos[photoKey]}" style="max-width: 300px; max-height: 300px; border: 1px solid #ccc; margin: 10px 0;" alt="${PHOTO_LABELS[photoKey]}" />`;
-          }
-        });
-      }
-
-      // Encode and send via mailto
-      const emailBody = encodeURIComponent(htmlBody);
-      window.location.href = `mailto:${BRAND.phoneE164.replace(/\D/g, '')}@example.com?subject=${emailSubject}&body=${emailBody}`;
-      
-      // Store photos for fallback handling
-      if (Object.keys(photos).length > 0) {
-        sessionStorage.setItem('poolServicePhotos', JSON.stringify(photos));
-      }
+      // Show desktop submission options
+      setSubmissionMethod(null); // Reset to show options
+      setStep(9); // New step for choosing submission method
     }
+  };
+
+  // Handle actual submission with chosen method
+  const submitViaEmail = () => {
+    const subject = encodeURIComponent('J & A Pools LLC Service Request');
+    const request = buildPoolServiceRequest();
+    const bodyText = formatRequestAsText(request);
+    const body = encodeURIComponent(bodyText + '\n\n[Note: You captured 3 photos with this request. Please reply to confirm you received this message, and you can share photos via email or messaging.]');
+    
+    // Use a generic support email format based on phone number
+    const genericEmail = 'support@japools.local';
+    window.location.href = `mailto:${genericEmail}?subject=${subject}&body=${body}`;
     setDispatched(true);
+  };
+
+  const submitViaSMS = () => {
+    const request = buildPoolServiceRequest();
+    window.location.href = buildSmsLink(message);
+    setDispatched(true);
+  };
+
+  const submitViaCopy = async () => {
+    const request = buildPoolServiceRequest();
+    const success = await copyRequestToClipboard(request);
+    if (success) {
+      setCopiedToClipboard(true);
+      setTimeout(() => setCopiedToClipboard(false), 3000);
+    }
   };
 
   const ErrorMessage = ({ field }: { field: string }) =>
@@ -344,7 +351,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
           <p className="mt-2 text-xs font-semibold text-espresso/65">{STEP_NAMES[step - 1]}</p>
         </div>
 
-        <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
+        <form className="flex min-h-0 flex-1 flex-col">
           <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8">
             {step >= 1 && step <= 4 && (
               <section className="space-y-5" aria-label="Customer and property information">
@@ -550,6 +557,80 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                 )}
               </section>
             )}
+
+            {step === 9 && (
+              <section aria-label="Choose submission method">
+                <p className="mb-6 text-sm leading-relaxed text-espresso/75">
+                  Choose how you'd like to submit your pool service request with photos:
+                </p>
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={submitViaEmail}
+                    className="w-full rounded-xl border border-espresso/20 bg-cream/50 p-4 text-left transition-colors hover:border-gold/60 hover:bg-petal/30"
+                  >
+                    <span className="flex items-center justify-between gap-3">
+                      <span className="font-semibold">📧 Email Request</span>
+                      <ArrowRight className="h-4 w-4 text-gold" />
+                    </span>
+                    <span className="mt-2 block text-sm text-espresso/75">
+                      Opens your email client with the request pre-filled. Download the photos to attach.
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={submitViaSMS}
+                    className="w-full rounded-xl border border-espresso/20 bg-cream/50 p-4 text-left transition-colors hover:border-gold/60 hover:bg-petal/30"
+                  >
+                    <span className="flex items-center justify-between gap-3">
+                      <span className="font-semibold">💬 Text Message (SMS)</span>
+                      <ArrowRight className="h-4 w-4 text-gold" />
+                    </span>
+                    <span className="mt-2 block text-sm text-espresso/75">
+                      Opens your SMS/MMS app. Send as message—photos can be added via the messaging app.
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={submitViaCopy}
+                    className="w-full rounded-xl border border-espresso/20 bg-cream/50 p-4 text-left transition-colors hover:border-gold/60 hover:bg-petal/30"
+                  >
+                    <span className="flex items-center justify-between gap-3">
+                      <span className="font-semibold">📋 {copiedToClipboard ? 'Copied!' : 'Copy to Clipboard'}</span>
+                      <Copy className={`h-4 w-4 ${copiedToClipboard ? 'text-emerald-600' : 'text-gold'}`} />
+                    </span>
+                    <span className="mt-2 block text-sm text-espresso/75">
+                      Copies your request details to your clipboard. Paste into any messaging app or email.
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      downloadAllImages(buildPoolServiceRequest());
+                    }}
+                    className="w-full rounded-xl border border-espresso/20 bg-cream/50 p-4 text-left transition-colors hover:border-gold/60 hover:bg-petal/30"
+                  >
+                    <span className="flex items-center justify-between gap-3">
+                      <span className="font-semibold">⬇️ Download Photos</span>
+                      <Download className="h-4 w-4 text-gold" />
+                    </span>
+                    <span className="mt-2 block text-sm text-espresso/75">
+                      Download all captured photos as separate files to your device.
+                    </span>
+                  </button>
+                </div>
+
+                <div className="mt-6 rounded-lg border border-gold/30 bg-petal/40 p-4 text-xs leading-relaxed text-espresso/75">
+                  <p className="font-semibold">💡 Pro tip:</p>
+                  <p className="mt-2">
+                    Your request details and photos are saved temporarily. You can switch methods or come back to this step if needed. All information will be cleared when you close this form.
+                  </p>
+                </div>
+              </section>
+            )}
           </div>
 
           <footer className="flex flex-col-reverse gap-3 border-t border-espresso/15 bg-ivory px-5 py-4 sm:flex-row sm:justify-between sm:px-8">
@@ -588,11 +669,15 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
               >
                 Continue <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </button>
-            ) : (
-              <button type="submit" className="btn-primary group">
-                Submit Service Request <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            ) : step === 8 ? (
+              <button type="button" onClick={handleSubmitClick} className="btn-primary group">
+                Choose Delivery Method <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </button>
-            )}
+            ) : step === 9 ? (
+              <button type="button" onClick={() => setStep(8)} className="btn-ghost">
+                Back to Review
+              </button>
+            ) : null}
           </footer>
         </form>
       </div>

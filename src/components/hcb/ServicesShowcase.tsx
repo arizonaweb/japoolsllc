@@ -23,7 +23,8 @@ const PILLAR_LINKS: Record<ServiceId, { labels: string[]; ids: string[] }> = {
 
 export default function ServicesShowcase({ selected, onSelect, onBook }: Props) {
   return (
-    <section id="services" className="relative overflow-hidden border-y border-espresso/15 bg-cream text-espresso">
+    <section id="services" className="relative scroll-mt-32 overflow-hidden border-y border-espresso/15 bg-cream text-espresso">
+      <span id="maintenance" className="absolute top-0 scroll-mt-32" />
       <div className="grain absolute inset-0" />
       <div className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32">
         <Reveal className="max-w-3xl">
@@ -48,6 +49,9 @@ export default function ServicesShowcase({ selected, onSelect, onBook }: Props) 
                       : 'border-espresso/15 bg-ivory hover:border-gold/60'
                   }`}
                 >
+                  <div className="sr-only" aria-hidden="true">
+                    {pillarLinks.ids.map((id) => <span key={id} id={id} />)}
+                  </div>
                   <h3 className="font-serif text-2xl font-semibold text-espresso sm:text-3xl">{service.name}</h3>
                   <p className="mt-3 text-[14px] leading-relaxed text-espresso/80">{service.description}</p>
                   <p className="mt-5 text-[11px] font-bold uppercase tracking-[0.18em] text-bronze">

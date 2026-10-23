@@ -1,146 +1,59 @@
-/* J & A Pools LLC — Desert Beige and Grass Green */
+/* J & A Pools LLC — Pool Blue, White, and Warm Amber */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root,
-  html.light {
+  :root {
     color-scheme: light;
 
-    --c-ivory: 247 244 238;
-    --c-cream: 239 236 228;
-    --c-blush: 224 232 218;
-    --c-petal: 231 240 228;
-    --c-espresso: 26 28 25;
-    --c-bronze: 92 64 51;
-    --c-gold: 46 125 50;
+    --c-ivory: 255 255 255;
+    --c-cream: 248 250 252;
+    --c-blush: 219 234 254;
+    --c-petal: 239 246 255;
+    --c-espresso: 30 41 59;
+    --c-bronze: 0 90 156;
+    --c-gold: 245 166 35;
 
-    --background: 40 33% 97%;
-    --foreground: 100 6% 10%;
+    --background: 0 0% 100%;
+    --foreground: 215 25% 17%;
 
-    --card: 40 33% 98%;
-    --card-foreground: 100 6% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 17%;
 
-    --popover: 40 33% 98%;
-    --popover-foreground: 100 6% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 17%;
 
-    --primary: 123 46% 34%;
-    --primary-foreground: 40 33% 98%;
+    --primary: 204 100% 30%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 44 28% 92%;
-    --secondary-foreground: 100 6% 10%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 215 25% 17%;
 
-    --muted: 43 24% 91%;
-    --muted-foreground: 100 5% 30%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 123 46% 34%;
-    --accent-foreground: 40 33% 98%;
+    --accent: 201 97% 40%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 68% 44%;
-    --destructive-foreground: 40 33% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 42 14% 78%;
-    --input: 42 14% 78%;
-    --ring: 123 46% 34%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 204 100% 30%;
 
     --radius: 0.25rem;
 
-    --sidebar-background: 40 33% 97%;
-    --sidebar-foreground: 100 6% 10%;
-    --sidebar-primary: 123 46% 34%;
-    --sidebar-primary-foreground: 40 33% 98%;
-    --sidebar-accent: 43 24% 91%;
-    --sidebar-accent-foreground: 100 6% 10%;
-    --sidebar-border: 42 14% 78%;
-    --sidebar-ring: 123 46% 34%;
-  }
-
-  /* Automatic device dark mode when not explicitly overridden to .light */
-  @media (prefers-color-scheme: dark) {
-    :root:not(.light) {
-      color-scheme: dark;
-
-      --c-ivory: 20 30 26;
-      --c-cream: 28 38 32;
-      --c-blush: 62 91 66;
-      --c-petal: 37 59 41;
-      --c-espresso: 245 244 237;
-      --c-bronze: 194 164 139;
-      --c-gold: 111 184 112;
-
-      --background: 150 20% 10%;
-      --foreground: 45 30% 95%;
-      --card: 150 16% 14%;
-      --card-foreground: 45 30% 95%;
-      --popover: 150 16% 14%;
-      --popover-foreground: 45 30% 95%;
-      --primary: 123 34% 48%;
-      --primary-foreground: 45 30% 98%;
-      --secondary: 145 16% 20%;
-      --secondary-foreground: 45 30% 95%;
-      --muted: 145 14% 19%;
-      --muted-foreground: 43 18% 72%;
-      --accent: 123 34% 48%;
-      --accent-foreground: 45 30% 98%;
-      --destructive: 0 65% 55%;
-      --destructive-foreground: 45 30% 95%;
-      --border: 145 13% 26%;
-      --input: 145 13% 29%;
-      --ring: 123 34% 48%;
-
-      --sidebar-background: 150 20% 10%;
-      --sidebar-foreground: 45 30% 95%;
-      --sidebar-primary: 123 34% 48%;
-      --sidebar-primary-foreground: 45 30% 98%;
-      --sidebar-accent: 145 14% 19%;
-      --sidebar-accent-foreground: 45 30% 95%;
-      --sidebar-border: 145 13% 26%;
-      --sidebar-ring: 123 34% 48%;
-    }
-  }
-
-  /* Explicit .dark class (triggered by system matchMedia listener or user toggle) */
-  html.dark {
-    color-scheme: dark;
-
-    --c-ivory: 20 30 26;
-    --c-cream: 28 38 32;
-    --c-blush: 62 91 66;
-    --c-petal: 37 59 41;
-    --c-espresso: 245 244 237;
-    --c-bronze: 194 164 139;
-    --c-gold: 111 184 112;
-
-    --background: 150 20% 10%;
-    --foreground: 45 30% 95%;
-    --card: 150 16% 14%;
-    --card-foreground: 45 30% 95%;
-    --popover: 150 16% 14%;
-    --popover-foreground: 45 30% 95%;
-    --primary: 123 34% 48%;
-    --primary-foreground: 45 30% 98%;
-    --secondary: 145 16% 20%;
-    --secondary-foreground: 45 30% 95%;
-    --muted: 145 14% 19%;
-    --muted-foreground: 43 18% 72%;
-    --accent: 123 34% 48%;
-    --accent-foreground: 45 30% 98%;
-    --destructive: 0 65% 55%;
-    --destructive-foreground: 45 30% 95%;
-    --border: 145 13% 26%;
-    --input: 145 13% 29%;
-    --ring: 123 34% 48%;
-
-    --sidebar-background: 150 20% 10%;
-    --sidebar-foreground: 45 30% 95%;
-    --sidebar-primary: 123 34% 48%;
-    --sidebar-primary-foreground: 45 30% 98%;
-    --sidebar-accent: 145 14% 19%;
-    --sidebar-accent-foreground: 45 30% 95%;
-    --sidebar-border: 145 13% 26%;
-    --sidebar-ring: 123 34% 48%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 25% 17%;
+    --sidebar-primary: 204 100% 30%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 215 25% 17%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 204 100% 30%;
   }
 }
 
@@ -151,13 +64,24 @@
 
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 80px;
+    scroll-padding-top: 132px;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-size: 16px;
+    line-height: 1.6;
     font-weight: 400;
     transition: background-color 0.35s ease, color 0.35s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  nav,
+  button {
+    font-family: 'Montserrat', sans-serif;
   }
 
   ::selection {
@@ -177,7 +101,7 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-3 bg-gold px-7 py-4 text-[11px] uppercase tracking-[0.26em] text-white transition-all duration-300 hover:bg-bronze hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ivory;
+    @apply inline-flex items-center justify-center gap-3 bg-gold px-7 py-4 text-[11px] uppercase tracking-[0.26em] text-[#111111] transition-all duration-300 hover:bg-[#E09612] hover:text-[#111111] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ivory;
     font-weight: 600;
   }
 

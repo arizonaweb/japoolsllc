@@ -33,16 +33,19 @@ export const IMAGES = {
   logoPng: `${B}assets/Japools.png`,
   logoJpg: `${B}assets/ja_logo.jpg`,
   monogram: `${B}assets/Japools.png`,
-  heroTriptych: `${B}assets/cloud_reflection_pool.jpg`,
-  poster: `${B}assets/service_overview_board.jpg`,
-  artistCutout: `${B}assets/team_cleaning_wide.jpg`,
-  headshot: `${B}assets/team_cleaning_aqua.jpg`,
-  lifestyle: `${B}assets/cloud_reflection_pool.jpg`,
+  heroTriptych: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
+  heroPrimary: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_05.png`,
+  heroWater: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
+  equipment: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_02.jpg`,
+  poster: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_05.png`,
+  artistCutout: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_03.jpg`,
+  headshot: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_03.jpg`,
+  lifestyle: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
   beforePool: `${B}assets/before_pool.jpg`,
-  afterPool: `${B}assets/after_pool.jpg`,
+  afterPool: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona.jpg`,
   yelpReviews: `${B}assets/yelp_reviews.jpg`,
   og: `${B}assets/service_overview_board.jpg`,
-  fallbackSilk: `${B}assets/cloud_reflection_pool.jpg`,
+  fallbackSilk: `${B}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
 };
 
 export interface CoreServicePillar {
@@ -306,10 +309,16 @@ export const SERVICES: Service[] = [
 export const getService = (id: ServiceId) => SERVICES.find((s) => s.id === id) ?? SERVICES[0];
 
 export const NAV_LINKS = [
-  { id: 'about', label: 'About & Results' },
-  { id: 'services', label: 'Services' },
-  { id: 'contact', label: 'Contact' },
-  { id: 'retail', label: 'Quick Q&A' },
+  { id: 'maintenance', label: 'Weekly Maintenance' },
+  { id: 'pool-cleaning', label: 'Pool Cleaning' },
+  { id: 'equipment-upgrades', label: 'Equipment & Automation' },
+  { id: 'filter-pump-care', label: 'Filter & Pump Care' },
+  { id: 'repairs', label: 'Plumbing & Leaks' },
+  { id: 'services', label: 'Commercial' },
+  { id: 'gallery', label: 'Gallery' },
+  { id: 'retail', label: 'Pool Care Center' },
+  { id: 'credentials', label: 'Service Guarantee' },
+  { id: 'contact', label: 'Connect' },
 ];
 
 export const PAYMENT_LABELS: Record<string, string> = {

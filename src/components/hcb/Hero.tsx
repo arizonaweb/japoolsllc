@@ -1,109 +1,154 @@
-import { ArrowRight, CheckCircle2, Phone } from 'lucide-react';
-import { BRAND, CORE_PILLARS, IMAGES, TEL_LINK } from '@/data/brand';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { BRAND, IMAGES } from '@/data/brand';
 
 interface HeroProps {
   onBook: () => void;
 }
 
+const slides = [
+  {
+    image: IMAGES.heroPrimary,
+    alt: 'Arizona backyard pool with spa, Baja shelf, and landscaped hillside',
+    headline: 'Turning Backyard Pools Into Crystal-Clear Retreats',
+    description: 'From weekly maintenance and chemical balancing to equipment automation, we care for Phoenix pools with precision and pride.',
+    cta: 'Request an Estimate',
+    action: 'estimate',
+  },
+  {
+    image: IMAGES.heroPrimary,
+    alt: 'Clear blue pool at a Phoenix home',
+    badge: true,
+    headline: 'Trusted Pool Care Across Phoenix & the Valley',
+    description: 'BBB Accredited Business · A+ Rating · Accredited since 2023',
+    cta: 'Explore Pool Care',
+    action: 'services',
+  },
+  {
+    image: IMAGES.equipment,
+    alt: 'Pool equipment and maintenance service in Phoenix, Arizona',
+    headline: 'Effortless Pool Care — One Text Away',
+    description: 'Pump replacements, filter cleanings, plumbing repairs, and reliable weekly service plans for residential and commercial properties.',
+    cta: 'Explore Service Plans',
+    action: 'services',
+  },
+  {
+    image: IMAGES.heroWater,
+    alt: 'Sparkling clean residential pool reflecting the Arizona sky',
+    headline: 'Complete Green-to-Clean Pool Recovery',
+    description: 'Restore your water with expert algae treatment, brushing, vacuuming, and chemical testing.',
+    cta: 'Contact J & A Pools Today',
+    action: 'contact',
+  },
+];
+
 export default function Hero({ onBook }: HeroProps) {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (paused || reducedMotion) return;
+    const timer = window.setInterval(() => setActive((index) => (index + 1) % slides.length), 6000);
+    return () => window.clearInterval(timer);
+  }, [paused]);
+
+  const changeSlide = (direction: number) => {
+    setActive((index) => (index + direction + slides.length) % slides.length);
+  };
+
+  const selected = slides[active];
+
   return (
-    <section id="top" className="relative overflow-hidden bg-cream pt-[76px]">
-      <div className="grain absolute inset-0" />
-      <div className="relative mx-auto grid max-w-[1400px] grid-cols-1 lg:min-h-[calc(100vh-76px)] lg:grid-cols-12 lg:items-center lg:gap-10">
-        {/* Text column */}
-        <div className="order-2 flex flex-col justify-between px-5 pb-14 pt-8 md:px-10 lg:order-1 lg:col-span-6 lg:py-14 lg:pr-2">
-          <div className="flex flex-wrap items-center gap-3 animate-fade-in">
-            <span className="h-0.5 w-8 bg-gold" />
-            <span className="eyebrow">{BRAND.tagline}</span>
-          </div>
+    <section
+      id="top"
+      className="relative min-h-[82vh] overflow-hidden bg-slate-900 pt-[116px] text-white"
+      aria-roledescription="carousel"
+      aria-label="J & A Pools services"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false);
+      }}
+    >
+      {slides.map((slide, index) => (
+        <div
+          key={slide.headline}
+          className={`absolute inset-0 transition-opacity duration-1000 ${active === index ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+          aria-hidden={active !== index}
+        >
+          <img src={slide.image} alt={slide.alt} className="absolute inset-0 h-full w-full object-cover" fetchPriority={index === 0 ? 'high' : 'auto'} />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.68)_0%,rgba(0,0,0,0.34)_60%,rgba(0,0,0,0.12)_100%)]" />
+        </div>
+      ))}
 
-          <div className="my-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-ivory/90 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-espresso shadow-sm">
-              <CheckCircle2 className="h-3.5 w-3.5 text-gold" />
-              <span>{BRAND.serviceArea} · BBB A+ Rated</span>
+      <div className="relative z-10 mx-auto flex min-h-[calc(82vh-116px)] max-w-[1440px] items-center px-6 py-24 sm:px-12 lg:px-24">
+        <img
+          src={IMAGES.logoJpg}
+          alt="J & A Pools LLC"
+          className="absolute left-6 top-6 w-36 rounded bg-white/95 p-2 shadow-lg sm:left-12 sm:w-44"
+        />
+        <div className={`max-w-3xl ${selected.badge ? 'mx-auto text-center' : ''}`} key={selected.headline}>
+          {selected.badge && (
+            <div className="mx-auto mb-7 flex h-64 w-64 flex-col items-center justify-center rounded-full border-4 border-[#F5A623] bg-slate-900/45 p-5 text-center shadow-[0_0_0_7px_rgba(255,255,255,0.85),0_0_0_12px_rgba(245,166,35,0.85)] sm:h-72 sm:w-72">
+              <span className="font-heading text-[10px] font-bold uppercase tracking-[0.22em] text-amber-200">J &amp; A Pools LLC</span>
+              <span className="my-3 h-px w-32 bg-white/80" />
+              <span className="font-heading text-lg font-bold uppercase leading-snug">BBB Accredited Business</span>
+              <span className="mt-1 font-heading text-sm font-semibold uppercase tracking-[0.18em] text-amber-200">A+ Rating</span>
+              <span className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em]">Accredited Since 2023</span>
+              <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.12em]">Phoenix &amp; the Valley</span>
             </div>
-
-            <h1 className="display mt-6 text-[clamp(3rem,5.8vw,5.8rem)] font-medium text-espresso">
-              Clean, clear pools. <em className="font-normal italic text-bronze">Happier days.</em>
-            </h1>
-
-            <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-espresso/85">
-              Dependable residential and commercial pool cleaning, precision water balancing, filter &amp; pump care,
-              equipment upgrades, and repairs across Phoenix, AZ.{' '}
-              <strong className="font-semibold text-espresso">
-                Call or text {BRAND.phoneDisplay} and we’ll get you set up quickly.
-              </strong>
+          )}
+          {!selected.badge && (
+            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/40 bg-black/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white">
+              <CheckCircle2 className="h-4 w-4 text-amber-300" />
+              {BRAND.serviceArea}
             </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <button onClick={onBook} className="btn-primary group">
-                Schedule Your Pool Service
-                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.8} />
-              </button>
-              <a
-                href={TEL_LINK}
-                className="inline-flex items-center justify-center gap-2 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-espresso hover:text-bronze"
-              >
-                <Phone className="h-3.5 w-3.5 text-gold" /> Call {BRAND.phoneDisplay}
-              </a>
-            </div>
-          </div>
-
-          {/* 6 Core Service Pillars from J & A Pools LLC Service Board */}
-          <dl className="grid grid-cols-2 gap-4 border-t border-espresso/15 pt-6 sm:grid-cols-3">
-            {CORE_PILLARS.map((pillar) => (
-              <div
-                id={pillar.id}
-                key={pillar.id}
-                className="scroll-mt-24 rounded-lg border border-espresso/10 bg-ivory/80 p-3.5 shadow-sm"
-              >
-                <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-bronze">{pillar.title}</dt>
-                <dd className="mt-1 text-[13px] leading-snug text-espresso/80">{pillar.subtitle}</dd>
-              </div>
-            ))}
-          </dl>
+          )}
+          <h1 className="font-heading text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[1.05] tracking-[-0.035em]">
+            {selected.headline}
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-[1.7] text-white/90 sm:text-lg">
+            {selected.description}
+          </p>
+          <button
+            onClick={() => {
+              if (selected.action === 'estimate') onBook();
+              else document.getElementById(selected.action)?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="mt-8 inline-flex min-h-12 items-center gap-3 rounded bg-[#F5A623] px-7 py-4 font-heading text-xs font-bold uppercase tracking-[0.12em] text-slate-950 transition-colors hover:bg-[#E09612] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            {selected.cta}
+            <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
+      </div>
 
-        {/* Visual Showcase Column */}
-        <div className="order-1 px-4 pt-6 sm:px-6 md:px-10 lg:order-2 lg:col-span-6 lg:py-14 lg:pl-2">
-          <div className="space-y-4">
-            <figure className="relative animate-fade-in overflow-hidden rounded-xl bg-ivory shadow-[0_28px_70px_-28px_rgba(46,125,50,0.24)] ring-1 ring-gold/35">
-              <img
-                src={IMAGES.poster}
-                alt="J & A Pools LLC — Pool Service, Cleaning, Repairs & Maintenance in Phoenix, AZ 85031"
-                width={1400}
-                height={933}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                className="block h-auto w-full object-cover"
-              />
-            </figure>
-
-            <div className="grid grid-cols-2 gap-4">
-              <figure className="relative overflow-hidden rounded-xl ring-1 ring-gold/30 shadow-md">
-                <img
-                  src={IMAGES.heroTriptych}
-                  alt="Crystal clear Arizona pool reflecting clouds in the sky"
-                  className="aspect-[16/10] w-full object-cover"
-                />
-                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
-                  Mirror-Clear Water
-                </figcaption>
-              </figure>
-              <figure className="relative overflow-hidden rounded-xl ring-1 ring-gold/30 shadow-md">
-                <img
-                  src={IMAGES.headshot}
-                  alt="J & A Pools LLC technician servicing a luxury Phoenix swimming pool"
-                  className="aspect-[16/10] w-full object-cover object-center"
-                />
-                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
-                  Weekly &amp; Bi-Weekly Care
-                </figcaption>
-              </figure>
-            </div>
-          </div>
-        </div>
+      <button
+        onClick={() => changeSlide(-1)}
+        aria-label="Previous slide"
+        className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 p-3 text-white transition hover:bg-black/60 sm:left-6"
+      >
+        <ArrowLeft className="h-6 w-6" />
+      </button>
+      <button
+        onClick={() => changeSlide(1)}
+        aria-label="Next slide"
+        className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 p-3 text-white transition hover:bg-black/60 sm:right-6"
+      >
+        <ArrowRight className="h-6 w-6" />
+      </button>
+      <div className="absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 gap-2" aria-label="Choose slide">
+        {slides.map((slide, index) => (
+          <button
+            key={slide.headline}
+            onClick={() => setActive(index)}
+            aria-label={`Show slide ${index + 1}`}
+            aria-current={active === index ? 'true' : undefined}
+            className={`h-2.5 rounded-full transition-all ${active === index ? 'w-8 bg-[#F5A623]' : 'w-2.5 bg-white/70 hover:bg-white'}`}
+          />
+        ))}
       </div>
     </section>
   );

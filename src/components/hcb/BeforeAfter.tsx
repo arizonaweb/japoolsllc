@@ -6,7 +6,7 @@ export default function BeforeAfter() {
   const [sliderPos, setSliderPos] = useState(50);
 
   return (
-    <section className="relative bg-ivory py-16 md:py-20" aria-labelledby="transformation-title">
+    <section id="green-to-clean" className="relative scroll-mt-32 bg-ivory py-16 md:py-20" aria-labelledby="transformation-title">
       <Reveal className="mx-auto max-w-[1200px] px-5 md:px-10">
         <div className="rounded-2xl border border-espresso/15 bg-cream/80 p-5 shadow-md sm:p-7">
           <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">

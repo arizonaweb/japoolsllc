@@ -36,7 +36,7 @@ export default function Nav({ onBook, onBlog }: NavProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled((prev) => (prev ? window.scrollY > 10 : window.scrollY > 60));
+    const onScroll = () => setScrolled(window.scrollY > 30);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -89,26 +89,24 @@ export default function Nav({ onBook, onBlog }: NavProps) {
           </div>
         </div>
 
-        <div className="bg-white text-slate-800">
+        <div className="border-b border-slate-100 bg-white text-slate-800 shadow-sm">
           <div
-            className={`relative mx-auto flex max-w-[1440px] justify-end gap-5 px-4 transition-[height] duration-700 ease-in-out sm:px-6 lg:px-10 ${
-              scrolled ? 'h-[76px] items-center' : 'h-[150px] items-end pb-3'
+            className={`relative mx-auto flex max-w-[1440px] items-center justify-between gap-5 px-4 transition-[height] duration-500 ease-out sm:px-6 lg:px-10 ${
+              scrolled ? 'h-[72px] sm:h-[76px]' : 'h-[108px] sm:h-[116px]'
             }`}
           >
             <a
               href="#top"
               onClick={(event) => { event.preventDefault(); go('top'); }}
               aria-label="J & A Pools LLC home"
-              className={`absolute transition-all duration-700 ease-in-out ${
-                scrolled
-                  ? 'left-4 top-1/2 -translate-x-0 -translate-y-1/2 sm:left-6 lg:left-10'
-                  : 'left-1/2 top-3 -translate-x-1/2 translate-y-0'
-              }`}
+              className="flex items-center transition-all duration-500 ease-out origin-left select-none"
             >
               <img
                 src={IMAGES.logoPng}
                 alt="J & A Pools LLC"
-                className={`w-auto object-contain transition-all duration-700 ease-in-out ${scrolled ? 'h-11 sm:h-12' : 'h-24 sm:h-28'}`}
+                className={`w-auto object-contain transition-all duration-500 ease-out origin-left ${
+                  scrolled ? 'h-10 sm:h-12' : 'h-16 sm:h-20 lg:h-22'
+                }`}
               />
             </a>
             <nav className="hidden flex-1 flex-wrap items-center justify-end gap-x-4 gap-y-2 2xl:flex" aria-label="Primary">
@@ -137,7 +135,7 @@ export default function Nav({ onBook, onBlog }: NavProps) {
 
       <div
         id="mobile-menu"
-        style={{ top: scrolled ? 116 : 190 }}
+        style={{ top: scrolled ? 112 : 148 }}
         className={`fixed inset-x-0 bottom-0 z-[45] overflow-y-auto bg-white transition-all duration-300 2xl:hidden ${
           open ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
         }`}

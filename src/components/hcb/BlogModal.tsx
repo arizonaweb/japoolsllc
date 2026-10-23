@@ -226,7 +226,7 @@ export default function BlogModal({ open, onClose }: BlogModalProps) {
 
 // Simple markdown to HTML converter
 function parseMarkdownToHtml(markdown: string): string {
-  let html = markdown
+  const html = markdown
     // Headers
     .replace(/^## (.+)$/gm, '<h2>$1</h2>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')

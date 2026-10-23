@@ -18,6 +18,7 @@ export const BRAND = {
   googleShareUrl2: 'https://share.google/pgsInM5vSJPAXc5w8',
   phoneDisplay: '480-688-7254',
   phoneE164: '+14806887254',
+  email: 'joe@japoolsllc.com',
   zipCode: '85031',
 };
 

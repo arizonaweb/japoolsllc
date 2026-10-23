@@ -5,6 +5,8 @@ import { EMAIL_RE } from '@/lib/bookings';
 import {
   copyRequestToClipboard,
   downloadRequestPacket,
+  generateMailtoLink,
+  generateSMSLink,
   saveRequestToTemporaryStorage,
   shareRequestBundle,
   type PoolServiceRequest,
@@ -519,6 +521,14 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                   Review your complete service request below. Tap Send Request and your photos and details are sent together in one pass — choose Messages or Mail when your device's share sheet opens and everything is already attached.
                 </p>
                 <dl className="mt-5 space-y-3 rounded-xl border border-espresso/15 bg-cream/60 p-5 text-sm">
+                  <div>
+                    <dt className="font-semibold">Send to</dt>
+                    <dd>
+                      <a href={generateSMSLink(buildPoolServiceRequest(), BRAND.phoneE164)} className="underline">{BRAND.phoneE164}</a>
+                      {' · '}
+                      <a href={generateMailtoLink(buildPoolServiceRequest(), BRAND.email)} className="underline">{BRAND.email}</a>
+                    </dd>
+                  </div>
                   <div><dt className="font-semibold">Name</dt><dd>{form.name}</dd></div>
                   <div><dt className="font-semibold">Email</dt><dd>{form.email}</dd></div>
                   <div><dt className="font-semibold">Phone</dt><dd>{form.phone}</dd></div>
@@ -554,7 +564,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
 
           </div>
 
-          <footer className="flex flex-col-reverse gap-3 border-t border-espresso/15 bg-ivory px-5 py-4 sm:flex-row sm:justify-between sm:px-8">
+          <footer className="flex flex-row items-center justify-between gap-3 border-t border-espresso/15 bg-ivory px-4 py-3 sm:px-8 sm:py-4 [&_.btn-primary]:px-4 [&_.btn-primary]:py-3 [&_.btn-ghost]:px-4 [&_.btn-ghost]:py-3 sm:[&_.btn-primary]:px-7 sm:[&_.btn-primary]:py-4 sm:[&_.btn-ghost]:px-7 sm:[&_.btn-ghost]:py-4">
             {step > 1 ? (
               <button type="button" onClick={() => setStep((current) => current - 1)} className="btn-ghost">
                 <ArrowLeft className="h-4 w-4" /> Back

@@ -5,29 +5,29 @@ import Reveal from './Reveal';
 
 const photos = [
   {
-    src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_05.png`,
-    alt: 'Luxury Phoenix backyard pool with spa and Baja shelf',
+    src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_05.jpg`,
+    alt: 'Phoenix backyard residential pool with spa features - J & A Pools service example',
     title: 'Backyard Pool & Spa',
   },
   {
     src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_04.jpg`,
-    alt: 'Crystal-clear pool reflecting the Arizona sky',
-    title: 'Crystal-Clear Water',
+    alt: 'Clear blue residential pool water maintained by J & A Pools Phoenix',
+    title: 'Clear Pool Water',
   },
   {
     src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona.jpg`,
-    alt: 'Sparkling clean residential swimming pool',
-    title: 'Residential Pool Care',
+    alt: 'Residential swimming pool cleaning and maintenance service in Phoenix Arizona',
+    title: 'Residential Pool Service',
   },
   {
     src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_03.jpg`,
-    alt: 'Pool maintenance in progress',
-    title: 'Professional Maintenance',
+    alt: 'Professional pool maintenance work performed by J & A Pools technician',
+    title: 'Professional Pool Maintenance',
   },
   {
     src: `${import.meta.env.BASE_URL}assets/japoolsllc_pool_cleaning_service_phoenix_arizona_02.jpg`,
-    alt: 'Well-maintained pool filtration equipment',
-    title: 'Equipment & Filtration',
+    alt: 'Pool filtration and pump equipment service and upgrades in Phoenix',
+    title: 'Equipment & Filtration Service',
   },
 ];
 

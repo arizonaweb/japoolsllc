@@ -7,8 +7,8 @@ export default function BeforeAfter() {
 
   return (
     <section id="green-to-clean" className="relative scroll-mt-32 bg-ivory py-16 md:py-20" aria-labelledby="transformation-title">
-      <Reveal from="left" className="mx-auto max-w-[1200px] px-5 md:px-10">
-        <div className="rounded-2xl border border-espresso/15 bg-cream/80 p-5 shadow-md sm:p-7">
+      <Reveal from="bottom" className="mx-auto max-w-[1200px] px-5 md:px-10">
+        <div className="rounded-2xl border border-espresso/15 bg-cream/80 p-5 shadow-md sm:p-7 backdrop-blur-sm">
           <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
             <div>
               <p className="eyebrow">Real Phoenix Transformation</p>
@@ -19,10 +19,10 @@ export default function BeforeAfter() {
             <span className="text-[12px] font-medium text-espresso/75">Drag slider to compare Before vs. After</span>
           </div>
 
-          <div className="relative mt-5 aspect-[16/9] w-full overflow-hidden rounded-xl ring-1 ring-espresso/15 select-none">
+          <div className="relative mt-5 aspect-[16/9] w-full overflow-hidden rounded-xl ring-1 ring-espresso/15 select-none shadow-lg">
             <img
               src={IMAGES.afterPool}
-              alt="Pool after cleaning"
+              alt="Pool after cleaning showing clear blue water"
               loading="eager"
               decoding="async"
               className="h-full w-full object-cover"
@@ -33,12 +33,12 @@ export default function BeforeAfter() {
             <div className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${sliderPos}%` }}>
               <img
                 src={IMAGES.beforePool}
-                alt="Pool before cleaning"
+                alt="Pool before cleaning showing algae and green water"
                 loading="eager"
                 decoding="async"
                 className="h-full w-[calc(100vw-2.5rem)] max-w-[1120px] object-cover"
               />
-              <span className="absolute left-3 top-3 rounded bg-red-700 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow">
+              <span className="absolute left-3 top-3 rounded bg-blue-600 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow">
                 Before
               </span>
             </div>

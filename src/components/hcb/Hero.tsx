@@ -4,6 +4,7 @@ import { BRAND, IMAGES } from '@/data/brand';
 
 interface HeroProps {
   onBook: () => void;
+  onVideo?: () => void;
 }
 
 const slides = [
@@ -40,9 +41,17 @@ const slides = [
     cta: 'Contact J & A Pools Today',
     action: 'contact',
   },
+  {
+    image: IMAGES.heroTriptych,
+    alt: 'Drone footage of J & A Pools service',
+    headline: 'Professional Pool Service You Can Trust',
+    description: 'Watch our team in action as we deliver the premium pool care that keeps Phoenix pools pristine year-round.',
+    cta: 'Watch Drone Footage',
+    action: 'video',
+  },
 ];
 
-export default function Hero({ onBook }: HeroProps) {
+export default function Hero({ onBook, onVideo }: HeroProps) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -115,6 +124,7 @@ export default function Hero({ onBook }: HeroProps) {
           <button
             onClick={() => {
               if (selected.action === 'estimate') onBook();
+              else if (selected.action === 'video' && onVideo) onVideo();
               else document.getElementById(selected.action)?.scrollIntoView({ behavior: 'smooth' });
             }}
             className="mt-8 inline-flex min-h-12 items-center gap-3 rounded bg-[#F5A623] px-7 py-4 font-heading text-xs font-bold uppercase tracking-[0.12em] text-slate-950 transition-colors hover:bg-[#E09612] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"

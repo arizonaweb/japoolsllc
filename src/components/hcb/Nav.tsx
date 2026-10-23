@@ -4,6 +4,7 @@ import { BRAND, IMAGES, TEL_LINK } from '@/data/brand';
 
 interface NavProps {
   onBook: () => void;
+  onBlog?: () => void;
 }
 
 const primaryLinks = [
@@ -16,6 +17,7 @@ const primaryLinks = [
   { id: 'gallery', label: 'Gallery' },
   { id: 'retail', label: 'Pool Care Center' },
   { id: 'credentials', label: 'Service Guarantee' },
+  { id: 'blog', label: 'Pool Service Guide' },
   { id: 'contact', label: 'Connect' },
 ];
 
@@ -29,7 +31,7 @@ export function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
   );
 }
 
-export default function Nav({ onBook }: NavProps) {
+export default function Nav({ onBook, onBlog }: NavProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -41,7 +43,11 @@ export default function Nav({ onBook }: NavProps) {
 
   const go = (id: string) => {
     setOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    if (id === 'blog') {
+      onBlog?.();
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const requestEstimate = () => {

@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 export default defineConfig(({ mode }) => ({
-  base: "/japoolsllc/",   // ⭐ REQUIRED for GitHub Pages
+  base: "/",   // custom domain serves from root
 
   server: {
     host: "::",

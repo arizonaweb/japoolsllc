@@ -11,6 +11,7 @@ import Retail from './hcb/Retail';
 import Footer from './hcb/Footer';
 import BookingModal from './hcb/BookingModal';
 import BlogModal from './hcb/BlogModal';
+import VideoModal from './VideoModal';
 import InstallPrompt from './hcb/InstallPrompt';
 
 type ReturnNotice = null | { tone: 'ok' | 'info'; text: string };
@@ -19,12 +20,15 @@ export default function AppLayout() {
   const [serviceId, setServiceId] = useState<ServiceId>('weekly-service');
   const [modalOpen, setModalOpen] = useState(false);
   const [blogOpen, setBlogOpen] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
   const [notice, setNotice] = useState<ReturnNotice>(null);
 
   const openBooking = useCallback(() => setModalOpen(true), []);
   const closeBooking = useCallback(() => setModalOpen(false), []);
   const openBlog = useCallback(() => setBlogOpen(true), []);
   const closeBlog = useCallback(() => setBlogOpen(false), []);
+  const openVideo = useCallback(() => setVideoOpen(true), []);
+  const closeVideo = useCallback(() => setVideoOpen(false), []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -63,7 +67,7 @@ export default function AppLayout() {
       )}
 
       <main>
-        <Hero onBook={openBooking} />
+        <Hero onBook={openBooking} onVideo={openVideo} />
         <BeforeAfter />
         <Gallery />
         <About />
@@ -84,6 +88,13 @@ export default function AppLayout() {
       <BlogModal
         open={blogOpen}
         onClose={closeBlog}
+      />
+
+      <VideoModal
+        isOpen={videoOpen}
+        onClose={closeVideo}
+        videoSrc={`${import.meta.env.BASE_URL}assets/japools_video_drone_capture.mp4`}
+        title="J & A Pools — Drone Footage"
       />
     </div>
   );

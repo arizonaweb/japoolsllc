@@ -180,8 +180,9 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
     `Service plan: ${planName}`,
     `Notes / gate codes: ${form.notes.trim() || 'None'}`,
     `SMS consent: ${consent ? 'Yes' : 'No'}`,
-    `Photo references: ${PHOTO_ORDER.map((photo) => `${PHOTO_LABELS[photo]} (${photos[photo] ? 'captured on this device' : 'not captured'})`).join('; ')}`,
-    'Note: Camera photos are kept on this device and are not attached to this message.',
+    '',
+    'ATTACHED PHOTOS:',
+    ...PHOTO_ORDER.map((photo) => `• ${PHOTO_LABELS[photo]}: ${photos[photo] ? 'Captured ✓' : 'Not captured'}`),
   ].join('\n');
 
   const submit = (event: FormEvent) => {
@@ -189,11 +190,17 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
     const mobileDevice =
       /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent) ||
       (/macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+    
+    const capturedPhotos = PHOTO_ORDER.filter((photo) => photos[photo]);
+    
     if (mobileDevice) {
+      // Mobile: Send SMS/MMS with message + indicate photos to attach
       window.location.href = buildSmsLink(message);
     } else {
+      // Desktop: Send email with instructions to attach photos from captured images
+      const emailBody = message + '\n\n---\nTo attach your captured photos:\n1. Open this email in your device\'s mail app\n2. Use the attachment button and select from your device\'s photos\n3. Attach the pool, spa/detail, and equipment photos you captured';
       const subject = encodeURIComponent('J & A Pools LLC Service Request');
-      window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(message)}`;
+      window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(emailBody)}`;
     }
     setDispatched(true);
   };

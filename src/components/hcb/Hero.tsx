@@ -93,11 +93,6 @@ export default function Hero({ onBook, onVideo }: HeroProps) {
       ))}
 
       <div className="relative z-10 mx-auto flex min-h-[calc(82vh-116px)] max-w-[1440px] items-center px-6 py-24 sm:px-12 lg:px-24">
-        <img
-          src={IMAGES.logoJpg}
-          alt="J & A Pools LLC"
-          className="absolute left-6 top-6 w-36 rounded bg-white/95 p-2 shadow-lg sm:left-12 sm:w-44"
-        />
         <div className={`max-w-3xl ${selected.badge ? 'mx-auto text-center' : ''}`} key={selected.headline}>
           {selected.badge && (
             <div className="mx-auto mb-7 flex h-64 w-64 flex-col items-center justify-center rounded-full border-4 border-[#F5A623] bg-slate-900/45 p-5 text-center shadow-[0_0_0_7px_rgba(255,255,255,0.85),0_0_0_12px_rgba(245,166,35,0.85)] sm:h-72 sm:w-72">

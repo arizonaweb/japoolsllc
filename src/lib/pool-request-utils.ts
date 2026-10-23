@@ -228,3 +228,142 @@ export function downloadAllImages(request: PoolServiceRequest): void {
     }
   });
 }
+
+const PHOTO_FILE_NAMES: Record<string, string> = {
+  pool: 'pool-photo.jpg',
+  spa: 'spa-detail-photo.jpg',
+  equipment: 'equipment-pad-photo.jpg',
+};
+
+/**
+ * Convert a base64 data URL into a real File that can be attached to a
+ * native share (Messages, Mail, etc.).
+ */
+export function dataUrlToFile(dataUrl: string, filename: string): File {
+  const commaIndex = dataUrl.indexOf(',');
+  const header = commaIndex === -1 ? '' : dataUrl.slice(0, commaIndex);
+  const data = commaIndex === -1 ? dataUrl : dataUrl.slice(commaIndex + 1);
+  const mime = /data:(.*?)(;base64)?$/.exec(header)?.[1] || 'image/jpeg';
+  const binary = atob(data);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return new File([bytes], filename, { type: mime });
+}
+
+/**
+ * Compile every captured photo plus the request details into a single list
+ * of File objects. The details are also embedded as a .txt file so the text
+ * always travels with the photos, even in share targets that ignore the
+ * share `text` field when files are present.
+ */
+export function buildRequestFiles(request: PoolServiceRequest): File[] {
+  const files: File[] = [];
+  (['pool', 'spa', 'equipment'] as const).forEach((key) => {
+    const photo = request.photos[key];
+    if (photo) files.push(dataUrlToFile(photo, PHOTO_FILE_NAMES[key] ?? `${key}.jpg`));
+  });
+  files.push(
+    new File([formatRequestAsText(request)], 'j-and-a-pools-service-request.txt', {
+      type: 'text/plain',
+    }),
+  );
+  return files;
+}
+
+/**
+ * True when this browser can hand real files to the native share sheet
+ * (iOS Safari 15+, Android Chrome, desktop Chrome/Edge on supported OSes).
+ */
+export function canShareRequestFiles(files: File[]): boolean {
+  return (
+    typeof navigator !== 'undefined' &&
+    typeof navigator.canShare === 'function' &&
+    files.length > 0 &&
+    navigator.canShare({ files })
+  );
+}
+
+export type ShareResult = 'shared' | 'cancelled' | 'unsupported';
+
+/**
+ * One-pass submit: attach all photos AND the request text to the device's
+ * native share sheet in a single action. Picking Messages or Mail there
+ * delivers images and text together — something sms:/mailto: links can't do.
+ */
+export async function shareRequestBundle(request: PoolServiceRequest): Promise<ShareResult> {
+  if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') {
+    return 'unsupported';
+  }
+  const files = buildRequestFiles(request);
+  if (!canShareRequestFiles(files)) {
+    return 'unsupported';
+  }
+  try {
+    await navigator.share({
+      files,
+      title: 'J & A Pools LLC Service Request',
+      text: formatRequestAsText(request),
+    });
+    return 'shared';
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled';
+    return 'unsupported';
+  }
+}
+
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+/**
+ * Single-file fallback for browsers without native file sharing: one
+ * self-contained HTML packet with the full request text and every captured
+ * photo embedded inline. Downloads automatically — no choices required.
+ */
+export function downloadRequestPacket(request: PoolServiceRequest): void {
+  const photoLabels: Record<string, string> = {
+    pool: 'Pool photo',
+    spa: 'Spa / detail photo',
+    equipment: 'Equipment pad photo',
+  };
+
+  const photoSections = (['pool', 'spa', 'equipment'] as const)
+    .filter((key) => request.photos[key])
+    .map(
+      (key) => `
+        <h2 style="margin:24px 0 8px;font-size:16px;">${photoLabels[key]}</h2>
+        <img src="${request.photos[key]}" alt="${photoLabels[key]}" style="max-width:100%;border:1px solid #ccc;border-radius:8px;" />`,
+    )
+    .join('');
+
+  const textBlock = escapeHtml(formatRequestAsText(request)).replace(/\n/g, '<br/>');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>J &amp; A Pools LLC Service Request — ${escapeHtml(request.name.trim())}</title>
+</head>
+<body style="font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:720px;margin:24px auto;padding:0 16px;">
+  <h1 style="font-size:22px;margin-bottom:16px;">J &amp; A Pools LLC — Pool Service Request</h1>
+  <div>${textBlock}</div>
+  <hr style="border:none;border-top:1px solid #ccc;margin:24px 0;" />
+  ${photoSections}
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'j-and-a-pools-service-request.html';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}

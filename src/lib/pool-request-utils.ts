@@ -3,6 +3,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { BRAND, isAppleMobile } from '@/data/brand';
 import { savePhotosToStorage } from './photo-storage';
 
 export interface PoolServiceRequest {
@@ -13,7 +14,25 @@ export interface PoolServiceRequest {
   serviceType: string;
   notes: string;
   smsConsent: boolean;
-  photos: Record<string, string>; // base64 data URLs
+  hasSpa?: boolean;
+  photos: Partial<Record<string, string>>;
+}
+
+const PHOTO_ORDER = ['equipment', 'pool', 'otherSide', 'spa'] as const;
+
+const PHOTO_META: Record<string, { file: string; label: string }> = {
+  equipment: { file: 'pump-system.jpg', label: 'Pump system' },
+  pool: { file: 'pool.jpg', label: 'Pool' },
+  otherSide: { file: 'pool-other-side.jpg', label: 'Other side of the pool' },
+  spa: { file: 'spa.jpg', label: 'Spa' },
+};
+
+export function requestSendNote(): string {
+  return `Just tap send to complete your request. If the number was not added to the recipient field, please copy and paste ${BRAND.phonePaste} into the recipient field.`;
+}
+
+function attachedPhotoKeys(photos: Partial<Record<string, string>>): string[] {
+  return PHOTO_ORDER.filter((key) => photos[key]);
 }
 
 /**
@@ -27,26 +46,22 @@ export function generateSessionId(): string {
  * Create a formatted text request for copy/paste
  */
 export function formatRequestAsText(request: PoolServiceRequest): string {
-  const { name, email, phone, address, serviceType, notes, smsConsent, photos } = request;
-
-  return [
-    'J & A Pools LLC — Pool Service Request',
+  const { name, email, phone, address, serviceType, notes, hasSpa, photos } = request;
+  const photoLabels = attachedPhotoKeys(photos).map((key) => PHOTO_META[key]?.label ?? key);
+  const lines = [
+    'J & A Pools service request',
     '',
     `Name: ${name.trim()}`,
     `Email: ${email.trim()}`,
     `Phone: ${phone.trim()}`,
-    `Pool address: ${address.trim()}`,
-    `Service plan: ${serviceType}`,
-    `Notes / gate codes: ${notes.trim() || 'None'}`,
-    `SMS consent: ${smsConsent ? 'Yes' : 'No'}`,
-    '',
-    'PHOTOS CAPTURED:',
-    `• Pool photo: ${photos.pool ? 'Included ✓' : 'Not captured'}`,
-    `• Spa / detail photo: ${photos.spa ? 'Included ✓' : 'Not captured'}`,
-    `• Equipment pad photo: ${photos.equipment ? 'Included ✓' : 'Not captured'}`,
-    '',
-    'We will review your photos and contact you within 1 business day to confirm the service appointment.',
-  ].join('\n');
+    `Address: ${address.trim()}`,
+    `Service: ${serviceType}`,
+  ];
+  if (hasSpa != null) lines.push(`Spa: ${hasSpa ? 'Yes' : 'No'}`);
+  if (notes.trim()) lines.push(`Notes: ${notes.trim()}`);
+  if (photoLabels.length) lines.push(`Photos: ${photoLabels.join(', ')}`);
+  lines.push('', requestSendNote());
+  return lines.join('\n');
 }
 
 /**
@@ -63,20 +78,15 @@ export function formatRequestAsHTML(request: PoolServiceRequest): string {
     html += '<br/><br/><hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>';
     html += '<h3 style="font-family: Arial, sans-serif; color: #333;">Photos:</h3>';
 
-    const photoLabels: Record<string, string> = {
-      pool: 'Pool photo',
-      spa: 'Spa / detail photo',
-      equipment: 'Equipment pad photo',
-    };
-
-    (['pool', 'spa', 'equipment'] as const).forEach((key) => {
+    attachedPhotoKeys(request.photos).forEach((key) => {
+      const label = PHOTO_META[key]?.label ?? key;
       if (request.photos[key]) {
         html += `<p style="font-family: Arial, sans-serif; color: #333; font-weight: bold;">
-          ${photoLabels[key]}:
+          ${label}:
         </p>`;
         html += `<img src="${request.photos[key]}" 
           style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; margin: 10px 0; display: block;" 
-          alt="${photoLabels[key]}" />`;
+          alt="${label}" />`;
       }
     });
   }
@@ -124,13 +134,7 @@ export function generateMailtoLink(
 ): string {
   const subject = encodeURIComponent('J & A Pools LLC Service Request');
   const text = formatRequestAsText(request);
-  const body = encodeURIComponent(
-    text +
-      '\n\n' +
-      `[Note: ${Object.values(request.photos).filter((p) => p).length} photos were captured. Please see attached files or respond to confirm receipt.]`
-  );
-
-  return `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+  return `mailto:${recipientEmail}?subject=${subject}&body=${encodeURIComponent(text)}`;
 }
 
 /**
@@ -148,9 +152,8 @@ export function generateWhatsAppLink(request: PoolServiceRequest, phoneNumber: s
  * Note: Images are not supported in SMS links; use MMS for images
  */
 export function generateSMSLink(request: PoolServiceRequest, phoneNumber: string): string {
-  const text = formatRequestAsText(request);
-  const encodedMessage = encodeURIComponent(text);
-  return `sms:${phoneNumber}?body=${encodedMessage}`;
+  const joiner = isAppleMobile() ? '&' : '?';
+  return `sms:${phoneNumber}${joiner}body=${encodeURIComponent(formatRequestAsText(request))}`;
 }
 
 /**
@@ -191,6 +194,7 @@ export async function saveRequestToTemporaryStorage(request: PoolServiceRequest)
     serviceType: request.serviceType,
     notes: request.notes,
     smsConsent: request.smsConsent,
+    hasSpa: request.hasSpa,
     photoKeys: Object.keys(request.photos),
     timestamp: Date.now(),
   };
@@ -216,24 +220,11 @@ export function downloadImage(base64Data: string, filename: string): void {
  * Download all images as a group
  */
 export function downloadAllImages(request: PoolServiceRequest): void {
-  const photoLabels: Record<string, string> = {
-    pool: 'pool-photo',
-    spa: 'spa-detail-photo',
-    equipment: 'equipment-pad-photo',
-  };
-
-  (['pool', 'spa', 'equipment'] as const).forEach((key) => {
-    if (request.photos[key]) {
-      downloadImage(request.photos[key], `${photoLabels[key]}.jpg`);
-    }
+  attachedPhotoKeys(request.photos).forEach((key) => {
+    const photo = request.photos[key];
+    if (photo) downloadImage(photo, PHOTO_META[key]?.file ?? `${key}.jpg`);
   });
 }
-
-const PHOTO_FILE_NAMES: Record<string, string> = {
-  pool: 'pool-photo.jpg',
-  spa: 'spa-detail-photo.jpg',
-  equipment: 'equipment-pad-photo.jpg',
-};
 
 /**
  * Convert a base64 data URL into a real File that can be attached to a
@@ -258,9 +249,9 @@ export function dataUrlToFile(dataUrl: string, filename: string): File {
  */
 export function buildRequestFiles(request: PoolServiceRequest): File[] {
   const files: File[] = [];
-  (['pool', 'spa', 'equipment'] as const).forEach((key) => {
+  attachedPhotoKeys(request.photos).forEach((key) => {
     const photo = request.photos[key];
-    if (photo) files.push(dataUrlToFile(photo, PHOTO_FILE_NAMES[key] ?? `${key}.jpg`));
+    if (photo) files.push(dataUrlToFile(photo, PHOTO_META[key]?.file ?? `${key}.jpg`));
   });
   files.push(
     new File([formatRequestAsText(request)], 'j-and-a-pools-service-request.txt', {
@@ -298,12 +289,11 @@ export async function shareRequestBundle(request: PoolServiceRequest): Promise<S
   if (!canShareRequestFiles(files)) {
     return 'unsupported';
   }
+  const text = formatRequestAsText(request);
+  const withText: ShareData = { files, text, title: 'Pool service request' };
+  const payload = navigator.canShare(withText) ? withText : { files, title: 'Pool service request' };
   try {
-    await navigator.share({
-      files,
-      title: 'J & A Pools LLC Service Request',
-      text: formatRequestAsText(request),
-    });
+    await navigator.share(payload);
     return 'shared';
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled';
@@ -325,19 +315,13 @@ const escapeHtml = (value: string): string =>
  * photo embedded inline. Downloads automatically — no choices required.
  */
 export function downloadRequestPacket(request: PoolServiceRequest): void {
-  const photoLabels: Record<string, string> = {
-    pool: 'Pool photo',
-    spa: 'Spa / detail photo',
-    equipment: 'Equipment pad photo',
-  };
-
-  const photoSections = (['pool', 'spa', 'equipment'] as const)
-    .filter((key) => request.photos[key])
-    .map(
-      (key) => `
-        <h2 style="margin:24px 0 8px;font-size:16px;">${photoLabels[key]}</h2>
-        <img src="${request.photos[key]}" alt="${photoLabels[key]}" style="max-width:100%;border:1px solid #ccc;border-radius:8px;" />`,
-    )
+  const photoSections = attachedPhotoKeys(request.photos)
+    .map((key) => {
+      const label = PHOTO_META[key]?.label ?? key;
+      return `
+        <h2 style="margin:24px 0 8px;font-size:16px;">${label}</h2>
+        <img src="${request.photos[key]}" alt="${label}" style="max-width:100%;border:1px solid #ccc;border-radius:8px;" />`;
+    })
     .join('');
 
   const textBlock = escapeHtml(formatRequestAsText(request)).replace(/\n/g, '<br/>');
@@ -366,4 +350,60 @@ export function downloadRequestPacket(request: PoolServiceRequest): void {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+}
+
+function isMobileDevice(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  if (/Android|iPhone|iPad|iPod/i.test(ua)) return true;
+  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+}
+
+/** Copy the shop number so the paste line in Messages works in one tap. */
+export function copyRecipientNumber(): void {
+  const value = BRAND.phonePaste;
+  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText && window.isSecureContext) {
+    void navigator.clipboard.writeText(value).catch(() => undefined);
+    return;
+  }
+  try {
+    const textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  } catch {
+    // The message still includes the number.
+  }
+}
+
+export type DeliveryResult = ShareResult | 'sms' | 'packet';
+
+/**
+ * Hand the request to the device. File share attaches the photos in Messages.
+ * Browsers cannot also set the SMS recipient in that same call, so the number
+ * is copied and the message ends with paste instructions. When file share is
+ * unavailable, an sms: link puts the number in the To field.
+ */
+export async function deliverRequest(request: PoolServiceRequest): Promise<DeliveryResult> {
+  copyRecipientNumber();
+  const shared = await shareRequestBundle(request);
+  if (shared === 'shared' || shared === 'cancelled') return shared;
+
+  const mobile = isMobileDevice();
+  const smsUrl = generateSMSLink(request, BRAND.phoneE164);
+  if (!mobile) {
+    downloadRequestPacket(request);
+    void copyRequestToClipboard(request);
+    window.setTimeout(() => {
+      window.location.href = smsUrl;
+    }, 400);
+    return 'packet';
+  }
+  if (typeof window !== 'undefined') window.location.href = smsUrl;
+  return 'sms';
 }

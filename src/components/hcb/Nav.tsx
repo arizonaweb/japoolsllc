@@ -67,7 +67,7 @@ export default function Nav({ onBook, onBlog }: NavProps) {
     <>
       <header className="fixed inset-x-0 top-0 z-40 shadow-sm">
         <div className="bg-[#111111] text-white">
-          <div className="mx-auto flex min-h-10 max-w-[1440px] items-center justify-between gap-4 px-4 text-[10px] font-semibold uppercase tracking-[0.12em] sm:px-6 lg:px-10">
+          <div className="mx-auto flex min-h-10 max-w-[1440px] items-center justify-between gap-4 px-4 text-[10px] font-semibold uppercase tracking-[0.12em] sm:px-4 lg:px-8">
             <div className="flex items-center gap-4 sm:gap-6">
               <a href={TEL_LINK} className="inline-flex items-center gap-2 whitespace-nowrap hover:text-amber-300">
                 <Phone className="h-3.5 w-3.5" />
@@ -91,8 +91,8 @@ export default function Nav({ onBook, onBlog }: NavProps) {
 
         <div className="border-b border-slate-100 bg-white text-slate-800 shadow-sm">
           <div
-            className={`relative mx-auto flex max-w-[1440px] items-center justify-between gap-5 px-4 transition-[height] duration-500 ease-out sm:px-6 lg:px-10 ${
-              scrolled ? 'h-[72px] sm:h-[76px]' : 'h-[108px] sm:h-[116px]'
+            className={`relative mx-auto flex max-w-[1440px] items-center justify-between gap-5 px-4 transition-[height] duration-500 ease-out sm:px-4 lg:px-8 ${
+              scrolled ? 'h-[64px] sm:h-[68px]' : 'h-[96px] sm:h-[100px]'
             }`}
           >
             <a

@@ -26,7 +26,7 @@ export default function ServicesShowcase({ selected, onSelect, onBook }: Props) 
     <section id="services" className="relative scroll-mt-32 overflow-hidden border-y border-espresso/15 bg-cream text-espresso">
       <span id="maintenance" className="absolute top-0 scroll-mt-32" />
       <div className="grain absolute inset-0" />
-      <div className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32">
+      <div className="relative mx-auto max-w-[1400px] px-5 py-16 md:px-8 md:py-20">
         <Reveal className="max-w-3xl">
           <p className="eyebrow">Services &amp; Maintenance Plans</p>
           <h2 className="display mt-5 text-[clamp(2.8rem,5.2vw,5rem)] text-espresso">

@@ -10,8 +10,8 @@ export default function Footer({ onBook }: FooterProps) {
   return (
     <footer id="contact" className="relative overflow-hidden border-t border-espresso/15 bg-ivory text-espresso">
       <div className="grain absolute inset-0" />
-      <div className="relative mx-auto max-w-[1400px] px-5 md:px-10">
-        <div className="flex flex-col justify-between gap-8 border-b border-espresso/15 py-12 sm:flex-row sm:items-center">
+      <div className="relative mx-auto max-w-[1400px] px-5 md:px-8">
+        <div className="flex flex-col justify-between gap-6 border-b border-espresso/15 py-8 sm:flex-row sm:items-center">
           <div>
             <p className="font-serif text-2xl font-semibold">J &amp; A Pools LLC</p>
             <p className="mt-1 text-[13px] text-espresso/75">Phoenix, AZ {BRAND.zipCode}</p>
@@ -45,7 +45,7 @@ export default function Footer({ onBook }: FooterProps) {
             </li>
           </ul>
         </div>
-        <div className="py-7 pb-24 text-xs leading-relaxed text-espresso/70 md:pb-7">
+        <div className="py-5 pb-16 text-xs leading-relaxed text-espresso/70 md:pb-5">
           <p>&copy; 2026 All rights reserved.</p>
           <p className="mt-2">
             This is a real website, I hope you like it. I made it just for you. To obtain this website, all rights to the content, design, and domain name, please don't hesitate to call me.

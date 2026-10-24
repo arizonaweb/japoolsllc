@@ -222,8 +222,8 @@ export default function ServiceCarousel({ onBook }: ServiceCarouselProps) {
   };
 
   return (
-    <section aria-labelledby="service-carousel-title" className="bg-white py-16 sm:py-20">
-      <div className="mx-auto flex max-w-[1400px] flex-wrap items-end justify-between gap-6 px-5 sm:px-8 lg:px-10">
+    <section aria-labelledby="service-carousel-title" className="bg-white py-12 sm:py-16">
+      <div className="mx-auto flex max-w-[1400px] flex-wrap items-end justify-between gap-6 px-5 sm:px-8 lg:px-8">
         <div className="max-w-xl">
           <p className="eyebrow">J &amp; A Pools Service Lineup</p>
           <h2 id="service-carousel-title" className="display mt-3 text-3xl text-espresso sm:text-4xl">
@@ -270,7 +270,7 @@ export default function ServiceCarousel({ onBook }: ServiceCarouselProps) {
         className="mt-8 cursor-grab select-none overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#005A9C] active:cursor-grabbing"
         style={{ touchAction: 'pan-y' }}
       >
-        <div ref={trackRef} className="flex w-max gap-4 px-5 py-1 sm:px-8 lg:px-10">
+        <div ref={trackRef} className="flex w-max gap-3 px-5 py-1 sm:px-8 lg:px-8">
           {[0, 1].map((copy) => (
             <ul
               key={copy}

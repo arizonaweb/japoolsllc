@@ -2,12 +2,25 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Check, Camera, X, Loader, Send } from 'lucide-react';
 import { BRAND, SERVICES, TEL_LINK, type ServiceId } from '@/data/brand';
 import { EMAIL_RE } from '@/lib/bookings';
-import { removeRequestPhoto, saveRequestDetails, supabase, uploadRequestPhoto } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
+import {
+  clearRequestState,
+  loadRequestState,
+  markSmsComposerOpened,
+  newSubmissionState,
+  REQUIRED_PHOTO_COUNT,
+  saveRequestState,
+  uploadRequestPhotos,
+  verifyRequestPhotos,
+  type PhotoUploadStatus,
+  type SavedRequestState,
+  type SmsStatus,
+  type SubmissionState,
+} from '@/lib/request-submission';
 import {
   copyRecipientNumber,
-  deliverRequest,
+  openSmsComposer,
   saveRequestToTemporaryStorage,
-  type DeliveryResult,
   type PoolServiceRequest,
 } from '@/lib/pool-request-utils';
 
@@ -87,16 +100,18 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [flash, setFlash] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [dispatched, setDispatched] = useState(false);
   const [isAutoPopulating, setIsAutoPopulating] = useState(false);
   const [sending, setSending] = useState(false);
-  const [shareOutcome, setShareOutcome] = useState<DeliveryResult | null>(null);
+  const [photoStatus, setPhotoStatus] = useState<PhotoUploadStatus>('idle');
+  const [smsStatus, setSmsStatus] = useState<SmsStatus>('not_opened');
+  const [uploadError, setUploadError] = useState('');
+  const [restored, setRestored] = useState<SavedRequestState | null>(null);
+  const [restoredSlots, setRestoredSlots] = useState<string[] | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const cameraToken = useRef(0);
-  const requestIdRef = useRef<string | null>(null);
-  const uploadedRef = useRef<Set<string>>(new Set());
+  const submissionRef = useRef<SubmissionState>(newSubmissionState());
   const activeStepRef = useRef(step);
   const activeOpenRef = useRef(open);
   activeStepRef.current = step;
@@ -104,13 +119,19 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
 
   const slots = hasSpa === null ? [] : photoSlots(hasSpa);
   const nextPhoto = slots.find((photo) => !photos[photo]);
-  const allPhotosCaptured = slots.length === 3 && slots.every((photo) => photos[photo]);
+  const allPhotosCaptured = slots.length === REQUIRED_PHOTO_COUNT && slots.every((photo) => photos[photo]);
   const showContinue = step === 6 && allPhotosCaptured;
   const showSend = step === 7;
 
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
+      const saved = loadRequestState();
+      if (saved && saved.photoStatus === 'uploaded') {
+        setRestored(saved);
+        setStep(7);
+        if (supabase) void verifyRequestPhotos(supabase, saved.requestId).then(setRestoredSlots);
+      }
       const timer = window.setTimeout(() => {
         dialogRef.current?.querySelector<HTMLInputElement>('input')?.focus();
       }, 50);
@@ -126,12 +147,14 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
     setIsCameraReady(false);
     setFlash(false);
     setErrors({});
-    setDispatched(false);
     setIsAutoPopulating(false);
     setSending(false);
-    setShareOutcome(null);
-    requestIdRef.current = null;
-    uploadedRef.current = new Set();
+    setPhotoStatus('idle');
+    setSmsStatus('not_opened');
+    setUploadError('');
+    setRestored(null);
+    setRestoredSlots(null);
+    submissionRef.current = newSubmissionState();
     return () => {
       document.body.style.overflow = '';
     };
@@ -257,12 +280,9 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
 
   const rememberPhoto = (key: PhotoKey, photoData: string) => {
     setPhotos((current) => ({ ...current, [key]: photoData }));
-    if (!supabase) return;
-    if (!requestIdRef.current) requestIdRef.current = String(Date.now());
-    uploadedRef.current.delete(key);
-    void uploadRequestPhoto(requestIdRef.current, key, photoData).then((ok) => {
-      if (ok) uploadedRef.current.add(key);
-    });
+    delete submissionRef.current.uploaded[key];
+    setPhotoStatus('idle');
+    setUploadError('');
   };
 
   const dropPhoto = (key: PhotoKey) => {
@@ -271,8 +291,8 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
       delete next[key];
       return next;
     });
-    uploadedRef.current.delete(key);
-    if (requestIdRef.current) void removeRequestPhoto(requestIdRef.current, key);
+    delete submissionRef.current.uploaded[key];
+    setPhotoStatus('idle');
   };
 
   const takeSnapshot = () => {
@@ -350,44 +370,55 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
     photos,
   });
 
-  const persistBackend = async (request: PoolServiceRequest) => {
-    if (!supabase) return;
-    try {
-      if (!requestIdRef.current) requestIdRef.current = String(Date.now());
-      const requestId = requestIdRef.current;
-      const keys = Object.keys(request.photos).filter((key) => request.photos[key]);
-      await Promise.all(
-        keys
-          .filter((key) => !uploadedRef.current.has(key))
-          .map(async (key) => {
-            if (await uploadRequestPhoto(requestId, key, request.photos[key] as string)) uploadedRef.current.add(key);
-          }),
-      );
-      await saveRequestDetails(requestId, request, keys);
-    } catch {
-      // Photos still go out with the text message.
-    }
-  };
-
   const handleSubmitClick = async (event: FormEvent) => {
     event.preventDefault();
     if (sending || !allPhotosCaptured) return;
     const request = buildPoolServiceRequest();
+    const activeSlots = photoSlots(hasSpa === true);
+    const chosen = Object.fromEntries(activeSlots.map((key) => [key, photos[key]]));
     setSending(true);
-    setShareOutcome(null);
-    void saveRequestToTemporaryStorage(request);
-    void persistBackend(request);
+    setUploadError('');
+    setPhotoStatus('uploading');
     try {
-      const result = await deliverRequest(request);
-      if (result === 'cancelled') {
-        setShareOutcome('cancelled');
+      const outcome = await uploadRequestPhotos(
+        supabase,
+        submissionRef.current,
+        request,
+        chosen,
+      );
+      if (outcome.ok === false) {
+        setPhotoStatus('failed');
+        setUploadError(outcome.error);
         return;
       }
-      setShareOutcome(result);
-      setDispatched(true);
+      setPhotoStatus('uploaded');
+      const requestId = submissionRef.current.requestId;
+      const details = {
+        name: form.name, email: form.email, phone: form.phone, address: form.address,
+        serviceType: planName, notes: form.notes, smsConsent: consent,
+      };
+      saveRequestState({ requestId, photoStatus: 'uploaded', smsStatus: 'composer_opened', photoSlots: outcome.slots, details, hasSpa: hasSpa === true });
+      void saveRequestToTemporaryStorage(request);
+      openSmsComposer({ ...request, requestId });
+      setSmsStatus('composer_opened');
+      void markSmsComposerOpened(supabase, requestId);
     } finally {
       setSending(false);
     }
+  };
+
+  const reopenSms = (saved: SavedRequestState) => {
+    openSmsComposer({
+      ...saved.details,
+      hasSpa: saved.hasSpa,
+      requestId: saved.requestId,
+      photos: Object.fromEntries(saved.photoSlots.map((slot) => [slot, 'uploaded'])),
+    });
+  };
+
+  const startNewRequest = () => {
+    clearRequestState();
+    onClose();
   };
 
   if (!open) return null;
@@ -624,7 +655,24 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
               </section>
             )}
 
-            {step === 7 && (
+            {step === 7 && restored && (
+              <section className="space-y-4" aria-label="Request status">
+                <p className="text-sm">Request ID: <span className="font-mono font-semibold">{restored.requestId}</span></p>
+                <p role="status" className="text-sm font-semibold text-emerald-700">
+                  {restoredSlots === null
+                    ? 'Checking your photos…'
+                    : restoredSlots.length === REQUIRED_PHOTO_COUNT
+                      ? 'Photo upload: all 3 photos uploaded and saved to this request.'
+                      : `Photo upload: only ${restoredSlots.length} of 3 photos confirmed. Please start a new request.`}
+                </p>
+                <p role="status" className="text-sm">
+                  Text message: Messages was opened. We can't tell if you tapped Send. Your request isn't received until the text arrives.
+                </p>
+                <button type="button" onClick={() => reopenSms(restored)} className="btn-primary">Open Messages again</button>
+                <button type="button" onClick={startNewRequest} className="block text-sm font-semibold underline">Start a new request</button>
+              </section>
+            )}
+            {step === 7 && !restored && (
               <section className="space-y-5" aria-label="Send request">
                 <dl className="space-y-1 text-sm">
                   <div>{form.name}</div>
@@ -632,7 +680,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                   <div>{form.phone}</div>
                   <div>{form.address}</div>
                   <div>{planName}</div>
-                  <div>3 photos</div>
+                  <div>{REQUIRED_PHOTO_COUNT} photos</div>
                 </dl>
                 <div>
                   <label htmlFor="booking-notes" className="field-label">Notes</label>
@@ -651,26 +699,26 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                   <span>OK to text me about this request.</span>
                 </label>
                 <p className="text-sm">
-                  Opens Messages with your photos. Sends to{' '}
+                  Uploads your 3 photos, then opens Messages with your request. Text to{' '}
                   <button type="button" onClick={copyRecipientNumber} className="font-semibold underline">
                     {BRAND.phonePaste}
                   </button>
                 </p>
-                {shareOutcome === 'shared' && dispatched && (
+                {photoStatus === 'uploading' && (
+                  <p role="status" className="text-sm font-semibold">Uploading your 3 photos…</p>
+                )}
+                {photoStatus === 'uploaded' && (
                   <p role="status" className="text-sm font-semibold text-emerald-700">
-                    If To is empty, paste {BRAND.phonePaste} and tap Send.
+                    Photo upload: all 3 photos uploaded and saved to request {submissionRef.current.requestId}.
                   </p>
                 )}
-                {shareOutcome === 'sms' && dispatched && (
-                  <p role="status" className="text-sm font-semibold text-emerald-700">Messages is open. Tap Send.</p>
+                {photoStatus === 'failed' && (
+                  <p role="alert" className="text-sm font-semibold text-destructive">{uploadError}</p>
                 )}
-                {shareOutcome === 'packet' && dispatched && (
-                  <p role="status" className="text-sm font-semibold text-emerald-700">
-                    Photos downloaded. Text them to {BRAND.phonePaste}.
+                {smsStatus === 'composer_opened' && (
+                  <p role="status" className="text-sm">
+                    Text message: Messages is open. Tap Send, and paste {BRAND.phonePaste} in To if it's empty. We can't tell whether it was sent.
                   </p>
-                )}
-                {shareOutcome === 'cancelled' && (
-                  <p role="status" className="text-sm">Not sent. Tap Send when you're ready.</p>
                 )}
               </section>
             )}
@@ -691,11 +739,11 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                 <button type="submit" disabled={sending} className="btn-primary disabled:cursor-not-allowed disabled:opacity-60">
                   {sending ? (
                     <>
-                      <Loader className="h-4 w-4 animate-spin" /> Opening…
+                      <Loader className="h-4 w-4 animate-spin" /> Uploading…
                     </>
                   ) : (
                     <>
-                      Send <Send className="h-4 w-4" />
+                      {photoStatus === 'failed' ? 'Retry upload' : smsStatus === 'composer_opened' ? 'Open Messages again' : 'Upload & text'} <Send className="h-4 w-4" />
                     </>
                   )}
                 </button>

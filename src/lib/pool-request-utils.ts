@@ -15,6 +15,7 @@ export interface PoolServiceRequest {
   notes: string;
   smsConsent: boolean;
   hasSpa?: boolean;
+  requestId?: string;
   photos: Partial<Record<string, string>>;
 }
 
@@ -46,10 +47,11 @@ export function generateSessionId(): string {
  * Create a formatted text request for copy/paste
  */
 export function formatRequestAsText(request: PoolServiceRequest): string {
-  const { name, email, phone, address, serviceType, notes, hasSpa, photos } = request;
+  const { name, email, phone, address, serviceType, notes, hasSpa, photos, requestId } = request;
   const photoLabels = attachedPhotoKeys(photos).map((key) => PHOTO_META[key]?.label ?? key);
   const lines = [
     'J & A Pools service request',
+    ...(requestId ? [`Request ID: ${requestId}`] : []),
     '',
     `Name: ${name.trim()}`,
     `Email: ${email.trim()}`,
@@ -59,7 +61,7 @@ export function formatRequestAsText(request: PoolServiceRequest): string {
   ];
   if (hasSpa != null) lines.push(`Spa: ${hasSpa ? 'Yes' : 'No'}`);
   if (notes.trim()) lines.push(`Notes: ${notes.trim()}`);
-  if (photoLabels.length) lines.push(`Photos: ${photoLabels.join(', ')}`);
+  if (photoLabels.length) lines.push(`Photos uploaded: ${photoLabels.join(', ')}`);
   lines.push('', requestSendNote());
   return lines.join('\n');
 }
@@ -406,4 +408,14 @@ export async function deliverRequest(request: PoolServiceRequest): Promise<Deliv
   }
   if (typeof window !== 'undefined') window.location.href = smsUrl;
   return 'sms';
+}
+
+/**
+ * Open the native SMS composer with the full request text and request ID.
+ * Photos are already in Supabase, so nothing is attached. The customer taps Send.
+ * Opening the composer does not mean the text was sent.
+ */
+export function openSmsComposer(request: PoolServiceRequest): void {
+  copyRecipientNumber();
+  window.location.href = generateSMSLink(request, BRAND.phoneE164);
 }

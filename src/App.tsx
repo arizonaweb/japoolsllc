@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Index from "./pages/Index";
+import OfficeRequest from "./pages/OfficeRequest";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/office/request" element={<OfficeRequest />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

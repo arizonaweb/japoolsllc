@@ -1,25 +1,43 @@
 import { useEffect, useState } from 'react';
 import { Menu, Phone, X } from 'lucide-react';
 import { BRAND, IMAGES, TEL_LINK } from '@/data/brand';
+import { useLanguage } from '@/contexts/LanguageContext';
+import SiteControls from './SiteControls';
+import ServiceIcons from './ServiceIcons';
 
 interface NavProps {
   onBook: () => void;
   onBlog?: () => void;
 }
 
-const primaryLinks = [
-  { id: 'maintenance', label: 'Weekly Maintenance' },
-  { id: 'pool-cleaning', label: 'Pool Cleaning' },
-  { id: 'equipment-upgrades', label: 'Equipment & Automation' },
-  { id: 'filter-pump-care', label: 'Filter & Pump Care' },
-  { id: 'repairs', label: 'Plumbing & Leaks' },
-  { id: 'services', label: 'Commercial' },
-  { id: 'gallery', label: 'Gallery' },
-  { id: 'retail', label: 'Pool Care Center' },
-  { id: 'credentials', label: 'Service Guarantee' },
-  { id: 'blog', label: 'Pool Service Guide' },
-  { id: 'contact', label: 'Connect' },
-];
+const primaryLinks = {
+  en: [
+    { id: 'maintenance', label: 'Weekly Maintenance' },
+    { id: 'pool-cleaning', label: 'Pool Cleaning' },
+    { id: 'equipment-upgrades', label: 'Equipment & Automation' },
+    { id: 'filter-pump-care', label: 'Filter & Pump Care' },
+    { id: 'repairs', label: 'Plumbing & Leaks' },
+    { id: 'services', label: 'Commercial' },
+    { id: 'gallery', label: 'Gallery' },
+    { id: 'retail', label: 'Pool Care Center' },
+    { id: 'credentials', label: 'Service Guarantee' },
+    { id: 'blog', label: 'Pool Service Guide' },
+    { id: 'contact', label: 'Connect' },
+  ],
+  es: [
+    { id: 'maintenance', label: 'Mantenimiento semanal' },
+    { id: 'pool-cleaning', label: 'Limpieza de piscinas' },
+    { id: 'equipment-upgrades', label: 'Equipos y automatización' },
+    { id: 'filter-pump-care', label: 'Filtros y bombas' },
+    { id: 'repairs', label: 'Plomería y fugas' },
+    { id: 'services', label: 'Comercial' },
+    { id: 'gallery', label: 'Galería' },
+    { id: 'retail', label: 'Centro de cuidado' },
+    { id: 'credentials', label: 'Garantía de servicio' },
+    { id: 'blog', label: 'Guía de piscinas' },
+    { id: 'contact', label: 'Contacto' },
+  ],
+};
 
 export function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
   return (
@@ -34,6 +52,8 @@ export function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
 export default function Nav({ onBook, onBlog }: NavProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { language } = useLanguage();
+  const links = primaryLinks[language];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -67,25 +87,30 @@ export default function Nav({ onBook, onBlog }: NavProps) {
     <>
       <header className="fixed inset-x-0 top-0 z-40 shadow-sm">
         <div className="bg-[#111111] text-white">
-          <div className="mx-auto flex min-h-10 max-w-[1440px] items-center justify-between gap-4 px-4 text-[10px] font-semibold uppercase tracking-[0.12em] sm:px-4 lg:px-8">
+          <div className="mx-auto flex min-h-10 max-w-[1440px] flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] sm:px-4 lg:px-8">
             <div className="flex items-center gap-4 sm:gap-6">
               <a href={TEL_LINK} className="inline-flex items-center gap-2 whitespace-nowrap hover:text-amber-300">
                 <Phone className="h-3.5 w-3.5" />
-                Call Now
+                {language === 'es' ? 'Llamar' : 'Call Now'}
               </a>
               <a href={`sms:${BRAND.phoneE164}`} className="hidden hover:text-amber-300 sm:inline">
-                Text Us
+                {language === 'es' ? 'Envíenos un texto' : 'Text Us'}
               </a>
             </div>
             <nav className="hidden items-center gap-5 xl:flex" aria-label="Quick links">
-              <button onClick={requestEstimate} className="hover:text-amber-300">Request an Estimate</button>
-              <button onClick={() => go('maintenance')} className="hover:text-amber-300">Schedule Maintenance</button>
-              <button onClick={() => go('green-to-clean')} className="hover:text-amber-300">Green-to-Clean</button>
-              <button onClick={() => go('credentials')} className="hover:text-amber-300">BBB A+ Accredited</button>
+              <button onClick={requestEstimate} className="hover:text-amber-300">{language === 'es' ? 'Solicitar presupuesto' : 'Request an Estimate'}</button>
+              <button onClick={() => go('maintenance')} className="hover:text-amber-300">{language === 'es' ? 'Programar mantenimiento' : 'Schedule Maintenance'}</button>
+              <button onClick={() => go('green-to-clean')} className="hover:text-amber-300">{language === 'es' ? 'De verde a limpio' : 'Green-to-Clean'}</button>
             </nav>
-            <button onClick={requestEstimate} className="ml-auto hover:text-amber-300 xl:hidden">
-              Request an Estimate
-            </button>
+            <div className="ml-auto flex items-center gap-3">
+              <div className="hidden items-center gap-2 sm:flex">
+                <ServiceIcons />
+              </div>
+              <SiteControls />
+              <button onClick={requestEstimate} className="hidden hover:text-amber-300 xl:hidden sm:inline">
+                {language === 'es' ? 'Solicitar presupuesto' : 'Request an Estimate'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -110,7 +135,7 @@ export default function Nav({ onBook, onBlog }: NavProps) {
               />
             </a>
             <nav className="hidden flex-1 flex-wrap items-center justify-end gap-x-4 gap-y-2 2xl:flex" aria-label="Primary">
-              {primaryLinks.map(({ id, label }) => (
+              {links.map(({ id, label }) => (
                 <button
                   key={id}
                   onClick={() => go(id)}
@@ -143,18 +168,15 @@ export default function Nav({ onBook, onBlog }: NavProps) {
       >
         <nav className="mx-auto flex max-w-2xl flex-col px-6 pb-8" aria-label="Mobile navigation">
           <button onClick={requestEstimate} className="border-b border-slate-200 py-4 text-left font-heading text-sm font-bold uppercase tracking-wide text-[#005A9C]">
-            Request an Estimate
+            {language === 'es' ? 'Solicitar presupuesto' : 'Request an Estimate'}
           </button>
           <button onClick={() => go('maintenance')} className="border-b border-slate-200 py-4 text-left font-heading text-sm font-semibold uppercase tracking-wide">
-            Schedule Maintenance
+            {language === 'es' ? 'Programar mantenimiento' : 'Schedule Maintenance'}
           </button>
           <button onClick={() => go('green-to-clean')} className="border-b border-slate-200 py-4 text-left font-heading text-sm font-semibold uppercase tracking-wide">
-            Green-to-Clean
+            {language === 'es' ? 'De verde a limpio' : 'Green-to-Clean'}
           </button>
-          <button onClick={() => go('credentials')} className="border-b border-slate-200 py-4 text-left font-heading text-sm font-semibold uppercase tracking-wide">
-            BBB A+ Accredited
-          </button>
-          {primaryLinks.map(({ id, label }) => (
+          {links.map(({ id, label }) => (
             <button
               key={id}
               onClick={() => go(id)}
@@ -166,11 +188,15 @@ export default function Nav({ onBook, onBlog }: NavProps) {
           <div className="flex items-center gap-6 py-5">
             <a href={TEL_LINK} className="inline-flex items-center gap-2 text-sm font-semibold text-[#005A9C]">
               <Phone className="h-4 w-4" />
-              Call Now
+              {language === 'es' ? 'Llamar' : 'Call Now'}
             </a>
             <a href={`sms:${BRAND.phoneE164}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#005A9C]">
-              Text Us
+              {language === 'es' ? 'Envíenos un texto' : 'Text Us'}
             </a>
+          </div>
+          <div className="flex items-center justify-between border-t border-slate-200 py-5 text-slate-700">
+            <ServiceIcons />
+            <SiteControls compact />
           </div>
         </nav>
       </div>

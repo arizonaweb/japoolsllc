@@ -18,14 +18,25 @@ export const BRAND = {
   googleShareUrl2: 'https://share.google/pgsInM5vSJPAXc5w8',
   phoneDisplay: '480-688-7254',
   phoneE164: '+14806887254',
+  phonePaste: '+1 480-688-7254',
   email: 'joe@japoolsllc.com',
   zipCode: '85031',
 };
 
 export const TEL_LINK = `tel:${BRAND.phoneE164}`;
 
-export const buildSmsLink = (body: string) =>
-  `sms:${BRAND.phoneE164}?body=${encodeURIComponent(body)}`;
+/** iOS puts the number in To only when the body is joined with &. Android needs ?. */
+export function isAppleMobile(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  if (/iPhone|iPad|iPod/i.test(ua)) return true;
+  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+}
+
+export const buildSmsLink = (body: string) => {
+  const joiner = isAppleMobile() ? '&' : '?';
+  return `sms:${BRAND.phoneE164}${joiner}body=${encodeURIComponent(body)}`;
+};
 
 const B = import.meta.env.BASE_URL;
 

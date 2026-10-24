@@ -10,10 +10,10 @@ export default function Retail() {
   return (
     <section id="retail" className="relative bg-cream border-t border-espresso/15">
       <div className="grain absolute inset-0" />
-      <div className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32">
+      <div className="relative mx-auto max-w-[1400px] px-5 py-16 md:px-8 md:py-20">
         {/* Quick Q&A Section from the J & A Pools Flyer */}
-        <Reveal className="mb-16">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+        <Reveal className="mb-12">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
             <div className="lg:col-span-5">
               <p className="eyebrow">Quick Q&amp;A</p>
               <h2 className="display mt-4 text-[clamp(2.4rem,4.5vw,4.2rem)] text-espresso">

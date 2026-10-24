@@ -35,8 +35,8 @@ export default function Gallery() {
 
   return (
     <Dialog.Root open={selected !== null} onOpenChange={(open) => { if (!open) setSelected(null); }}>
-      <section id="gallery" className="bg-white py-20 sm:py-24" aria-labelledby="gallery-title">
-        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10">
+      <section id="gallery" className="bg-white py-16 sm:py-20" aria-labelledby="gallery-title">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-8">
           <Reveal>
             <p className="eyebrow">Pool Care in Phoenix, Arizona</p>
             <h2 id="gallery-title" className="display mt-3 text-4xl text-espresso sm:text-5xl">

@@ -6,7 +6,7 @@ import { ShieldBadgeIcon } from './icons';
 export default function About() {
   return (
     <section id="about" className="relative scroll-mt-32 bg-ivory" aria-labelledby="about-title">
-      <div className="mx-auto grid max-w-[1300px] grid-cols-1 gap-12 px-5 py-24 md:grid-cols-12 md:gap-12 md:px-10 md:py-32">
+      <div className="mx-auto grid max-w-[1300px] grid-cols-1 gap-8 px-5 py-16 md:grid-cols-12 md:gap-8 md:px-8 md:py-20">
         {/* Left column — Owner & Crew photos, stays in view while scrolling */}
         <div className="md:col-span-4 lg:col-span-4">
           <Reveal from="left" className="md:sticky md:top-28 space-y-6">

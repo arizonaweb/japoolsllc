@@ -97,7 +97,7 @@ export default function Hero({ onBook }: HeroProps) {
         );
       })}
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] items-center px-6 py-12 sm:px-12 lg:px-24">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] items-center px-4 py-8 sm:px-8 lg:px-16">
         <div className="max-w-3xl text-left" key={selected.headline}>
           {selected.badge ? (
             <div className="mb-5 inline-flex items-center gap-2.5 rounded-full border border-amber-400/80 bg-slate-950/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white shadow-md backdrop-blur-sm">

@@ -107,7 +107,6 @@ export interface ReviewItem {
   rating: number;
   dateLabel: string;
   quote: string;
-  url: string;
 }
 
 export const REVIEWS: ReviewItem[] = [
@@ -118,7 +117,6 @@ export const REVIEWS: ReviewItem[] = [
     rating: 5,
     dateLabel: '5.0 ★ · Phoenix, AZ',
     quote: 'Really saved my summer and my pool’s life. These guys show up on time and communicate effectively. Thanks a ton guys.',
-    url: BRAND.googleShareUrl1,
   },
   {
     id: 'deb-f',
@@ -127,7 +125,6 @@ export const REVIEWS: ReviewItem[] = [
     rating: 5,
     dateLabel: '5.0 ★ · Phoenix, AZ',
     quote: 'Love Joe! Does a good job and communication is great.',
-    url: BRAND.googleShareUrl2,
   },
   {
     id: 'shannon-r',
@@ -136,7 +133,6 @@ export const REVIEWS: ReviewItem[] = [
     rating: 5,
     dateLabel: '5.0 ★ · BBB Accredited A+',
     quote: 'Great service. Had multiple pool services over the years and they’ve had our pool in the best condition.',
-    url: BRAND.bbbUrl,
   },
   {
     id: 'gail-g',
@@ -145,7 +141,6 @@ export const REVIEWS: ReviewItem[] = [
     rating: 5,
     dateLabel: '5.0 ★ · BBB Accredited A+',
     quote: 'Outstanding service! Reliable, our pool has never looked better!',
-    url: BRAND.bbbUrl,
   },
 ];
 
@@ -170,66 +165,6 @@ export const QUICK_QA: FaqItem[] = [
   {
     question: 'How do I schedule service?',
     answer: "Call us or use the Schedule Your Pool Service form and we'll get you set up quickly.",
-  },
-];
-
-export interface DirectoryItem {
-  id: string;
-  brand: string;
-  name: string;
-  description: string;
-  href: string;
-  cta: string;
-}
-
-export const DIRECTORY_LINKS: DirectoryItem[] = [
-  {
-    id: 'bbb-profile',
-    brand: 'Better Business Bureau',
-    name: 'J & A Pools LLC — BBB A+ Accredited Business',
-    description: 'BBB Accredited since July 2023 with an A+ rating for Swimming Pools and Pool Service in Phoenix, AZ 85031.',
-    href: BRAND.bbbUrl,
-    cta: 'View BBB Business Review',
-  },
-  {
-    id: 'ethical-community',
-    brand: 'Ethical Community',
-    name: 'Official Ethical Community Profile',
-    description: 'Verified Phoenix business listing highlighting our commitment to honest pricing, reliable scheduling, and clear communication.',
-    href: BRAND.websiteUrl,
-    cta: 'Visit EthicalCommunity.org',
-  },
-  {
-    id: 'google-share-1',
-    brand: 'Google Business Profile',
-    name: 'J & A Pools LLC — Phoenix Service Listing',
-    description: 'Find directions, service area coverage across Phoenix & Mesa, and customer reviews on Google.',
-    href: BRAND.googleShareUrl1,
-    cta: 'Open Google Listing',
-  },
-  {
-    id: 'google-share-2',
-    brand: 'Google Maps & Reviews',
-    name: 'J & A Pools LLC — Direct Share Link',
-    description: 'Share or bookmark our official Google Business card for fast pool service dispatch in the Valley.',
-    href: BRAND.googleShareUrl2,
-    cta: 'Open Google Card',
-  },
-  {
-    id: 'direct-sms',
-    brand: 'Fast Text Dispatch',
-    name: 'Text Us to Schedule Service',
-    description: 'Send a photo of your pool or equipment pad directly to Joe and the J & A Pools team for scheduling.',
-    href: buildSmsLink("Hi J & A Pools! I'd like to schedule pool service in the Phoenix area."),
-    cta: 'Text Us to Schedule',
-  },
-  {
-    id: 'direct-call',
-    brand: 'Direct Phone Line',
-    name: 'Call J & A Pools Directly',
-    description: 'Speak directly with J & A Pools LLC about weekly maintenance, green-to-clean recovery, or equipment repairs.',
-    href: TEL_LINK,
-    cta: 'Call Now',
   },
 ];
 

@@ -1,7 +1,6 @@
-import { Star, ExternalLink } from 'lucide-react';
-import { ABOUT, BRAND, IMAGES, REVIEWS } from '@/data/brand';
+import { Star } from 'lucide-react';
+import { ABOUT, IMAGES, REVIEWS } from '@/data/brand';
 import Reveal from './Reveal';
-import { ShieldBadgeIcon } from './icons';
 
 export default function About() {
   return (
@@ -74,24 +73,13 @@ export default function About() {
                   5-Star Reviews on <em className="italic text-bronze">Yelp &amp; BBB</em>
                 </h3>
               </div>
-              <a
-                href={BRAND.bbbUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-bronze hover:underline"
-              >
-                <ShieldBadgeIcon /> View BBB A+ Profile <ExternalLink className="h-3.5 w-3.5" />
-              </a>
             </div>
 
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
               {REVIEWS.map((r) => (
-                <a
+                <article
                   key={r.id}
-                  href={r.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex flex-col justify-between rounded-xl border border-espresso/15 bg-cream/60 p-5 transition-all hover:border-gold hover:shadow-md"
+                  className="flex flex-col justify-between rounded-xl border border-espresso/15 bg-cream/60 p-5"
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2">
@@ -109,10 +97,7 @@ export default function About() {
                       “{r.quote}”
                     </blockquote>
                   </div>
-                  <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-bronze group-hover:underline">
-                    Verified Source <ExternalLink className="h-3 w-3" />
-                  </span>
-                </a>
+                </article>
               ))}
             </div>
           </Reveal>

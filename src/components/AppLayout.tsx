@@ -3,7 +3,6 @@ import { X } from 'lucide-react';
 import { type ServiceId } from '@/data/brand';
 import Nav from './hcb/Nav';
 import Hero from './hcb/Hero';
-import BeforeAfter from './hcb/BeforeAfter';
 import Gallery from './hcb/Gallery';
 import ServicesShowcase from './hcb/ServicesShowcase';
 import ServiceCarousel from './hcb/ServiceCarousel';
@@ -64,7 +63,6 @@ export default function AppLayout() {
 
       <main>
         <Hero onBook={openBooking} />
-        <BeforeAfter />
         <ServiceCarousel onBook={openBooking} />
         <Gallery />
         <About />

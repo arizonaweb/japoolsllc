@@ -23,8 +23,8 @@ export default function SiteControls({ compact = false }: { compact?: boolean })
         className="rounded border border-current/20 bg-transparent px-1.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-inherit"
         aria-label="Language / Idioma"
       >
-        <option value="en">EN</option>
-        <option value="es">ES</option>
+        <option value="en" className="bg-white text-slate-900">EN</option>
+        <option value="es" className="bg-white text-slate-900">ES</option>
       </select>
       <button
         type="button"

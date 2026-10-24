@@ -100,7 +100,6 @@ export default function Nav({ onBook, onBlog }: NavProps) {
             <nav className="hidden items-center gap-5 xl:flex" aria-label="Quick links">
               <button onClick={requestEstimate} className="hover:text-amber-300">{language === 'es' ? 'Solicitar presupuesto' : 'Request an Estimate'}</button>
               <button onClick={() => go('maintenance')} className="hover:text-amber-300">{language === 'es' ? 'Programar mantenimiento' : 'Schedule Maintenance'}</button>
-              <button onClick={() => go('green-to-clean')} className="hover:text-amber-300">{language === 'es' ? 'De verde a limpio' : 'Green-to-Clean'}</button>
             </nav>
             <div className="ml-auto flex items-center gap-3">
               <div className="hidden items-center gap-2 sm:flex">
@@ -172,9 +171,6 @@ export default function Nav({ onBook, onBlog }: NavProps) {
           </button>
           <button onClick={() => go('maintenance')} className="border-b border-slate-200 py-4 text-left font-heading text-sm font-semibold uppercase tracking-wide">
             {language === 'es' ? 'Programar mantenimiento' : 'Schedule Maintenance'}
-          </button>
-          <button onClick={() => go('green-to-clean')} className="border-b border-slate-200 py-4 text-left font-heading text-sm font-semibold uppercase tracking-wide">
-            {language === 'es' ? 'De verde a limpio' : 'Green-to-Clean'}
           </button>
           {links.map(({ id, label }) => (
             <button

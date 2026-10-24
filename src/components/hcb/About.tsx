@@ -84,7 +84,7 @@ export default function About() {
                   <div>
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-serif text-xl font-semibold text-espresso">{r.author}</span>
-                      <span className="flex items-center gap-0.5 text-gold" aria-label="5 out of 5 stars">
+                      <span className="flex items-center gap-0.5 text-bronze" aria-label="5 out of 5 stars">
                         {Array.from({ length: r.rating }).map((_, idx) => (
                           <Star key={idx} className="h-3.5 w-3.5 fill-current" />
                         ))}

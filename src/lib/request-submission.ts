@@ -132,8 +132,6 @@ export interface SavedRequestState {
   photoStatus: PhotoUploadStatus;
   smsStatus: SmsStatus;
   photoSlots: string[];
-  details: SubmissionDetails;
-  hasSpa: boolean;
 }
 
 export function saveRequestState(value: SavedRequestState): void {

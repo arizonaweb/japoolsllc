@@ -393,11 +393,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
       }
       setPhotoStatus('uploaded');
       const requestId = submissionRef.current.requestId;
-      const details = {
-        name: form.name, email: form.email, phone: form.phone, address: form.address,
-        serviceType: planName, notes: form.notes, smsConsent: consent,
-      };
-      saveRequestState({ requestId, photoStatus: 'uploaded', smsStatus: 'composer_opened', photoSlots: outcome.slots, details, hasSpa: hasSpa === true });
+      saveRequestState({ requestId, photoStatus: 'uploaded', smsStatus: 'composer_opened', photoSlots: outcome.slots });
       void saveRequestToTemporaryStorage(request);
       openSmsComposer({ ...request, requestId });
       setSmsStatus('composer_opened');
@@ -409,8 +405,13 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
 
   const reopenSms = (saved: SavedRequestState) => {
     openSmsComposer({
-      ...saved.details,
-      hasSpa: saved.hasSpa,
+      name: 'See request ID',
+      email: '',
+      phone: '',
+      address: '',
+      serviceType: 'Service request',
+      notes: 'Details and 3 photos are saved under this request ID.',
+      smsConsent: false,
       requestId: saved.requestId,
       photos: Object.fromEntries(saved.photoSlots.map((slot) => [slot, 'uploaded'])),
     });

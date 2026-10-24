@@ -25,13 +25,13 @@ export default function Footer({ onBook }: FooterProps) {
           </div>
           <ul className="flex flex-col gap-4 text-[14px] text-espresso/85 sm:items-end">
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-gold" />
+              <Phone className="h-4 w-4 text-bronze" />
               <a href={TEL_LINK} className="link-underline font-semibold">
                 {language === 'es' ? 'Llamar' : 'Call Now'}
               </a>
             </li>
             <li className="flex items-center gap-2">
-              <MessageIcon className="h-4 w-4 text-gold" />
+              <MessageIcon className="h-4 w-4 text-bronze" />
               <a href={buildSmsLink('Hi J & A Pools! I would like to schedule pool service.')} className="link-underline">
                 {language === 'es' ? 'Envíenos un texto' : 'Text Us'}
               </a>

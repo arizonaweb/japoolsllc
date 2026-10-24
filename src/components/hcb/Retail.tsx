@@ -50,7 +50,7 @@ export default function Retail() {
                       className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
                     >
                       <span className="flex items-center gap-3 font-serif text-xl font-semibold text-espresso md:text-2xl">
-                        <HelpCircle className="h-5 w-5 shrink-0 text-gold" />
+                        <HelpCircle className="h-5 w-5 shrink-0 text-bronze" />
                         {item.question}
                       </span>
                       <ChevronDown

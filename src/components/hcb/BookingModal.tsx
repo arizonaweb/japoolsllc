@@ -462,7 +462,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                 <div className="flex items-center justify-between gap-2">
                   <label htmlFor="booking-address" className="field-label">Pool address</label>
                   {isAutoPopulating && (
-                    <span className="flex items-center gap-1.5 text-xs font-semibold text-gold">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-bronze">
                       <Loader className="h-3 w-3 animate-spin" /> Finding address…
                     </span>
                   )}
@@ -494,7 +494,7 @@ export default function BookingModal({ open, onClose, serviceId, onService }: Pr
                       >
                         <span className="flex items-center justify-between gap-3 font-semibold">
                           {service.name}
-                          {selected && <Check className="h-4 w-4 shrink-0 text-gold" />}
+                          {selected && <Check className="h-4 w-4 shrink-0 text-bronze" />}
                         </span>
                         <span className="mt-1 block text-sm text-espresso/70">{service.priceLabel}</span>
                       </button>

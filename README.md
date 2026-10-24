@@ -50,6 +50,9 @@ The Schedule Your Pool Service flow collects customer and property details, a se
 # Install dependencies
 npm install
 
+# Configure Supabase: copy the template and fill in your values
+cp .env.example .env
+
 # Start development server
 npm run dev
 
